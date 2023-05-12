@@ -1,16 +1,16 @@
-import { LikeDislike, LikeDislikePostInput } from '../@types/types'
+import { LikeDislike, LikeDislikeInput } from '../@types/types'
 
 export class CreateLikeDislikeDTO {
   private likeDislike: LikeDislike
-  private constructor(data: LikeDislikePostInput) {
+  private constructor(data: LikeDislikeInput) {
     this.likeDislike = {
       like: data.like ? 1 : 2,
-      post_id: data.postId,
+      content_id: data.contentId,
       user_id: data.userId,
     }
   }
 
-  static build(input: LikeDislikePostInput) {
+  static build(input: LikeDislikeInput) {
     const { likeDislike } = new CreateLikeDislikeDTO(input)
     return likeDislike
   }

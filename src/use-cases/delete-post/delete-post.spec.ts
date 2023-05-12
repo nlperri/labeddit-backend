@@ -7,18 +7,28 @@ import { hash } from 'bcryptjs'
 import { UserNotAllowed } from '../@errors/user-not-alowed-error'
 import { USER_ROLES } from '../../@types/types'
 import { InMemoryLikeDislikeRepository } from '../../repositories/in-memory/in-memory-like-dislike-repository'
+import { InMemoryCommentsPostsRepository } from '../../repositories/in-memory/in-memory-comments-posts-repository'
 
 let postsRepository: InMemoryPostsRepository
 let usersRepository: InMemoryUsersRepository
 let likeDislikeRepository: InMemoryLikeDislikeRepository
+let commentsPostsRepository: InMemoryCommentsPostsRepository
 let sut: DeletePostUseCase
 
 describe('Delete Post Use Case', () => {
   beforeEach(() => {
     usersRepository = new InMemoryUsersRepository()
-    postsRepository = new InMemoryPostsRepository(usersRepository)
+    commentsPostsRepository = new InMemoryCommentsPostsRepository()
+    postsRepository = new InMemoryPostsRepository(
+      usersRepository,
+      commentsPostsRepository,
+    )
     likeDislikeRepository = new InMemoryLikeDislikeRepository()
-    sut = new DeletePostUseCase(postsRepository, likeDislikeRepository)
+    sut = new DeletePostUseCase(
+      postsRepository,
+      likeDislikeRepository,
+      commentsPostsRepository,
+    )
   })
 
   it('should be able to delete a post', async () => {
@@ -106,7 +116,7 @@ describe('Delete Post Use Case', () => {
 
     await likeDislikeRepository.create({
       like: true,
-      postId: post.id,
+      contentId: post.id,
       userId: user.id,
     })
 

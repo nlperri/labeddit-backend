@@ -1,60 +1,64 @@
 import { randomUUID } from 'crypto'
-import { Post, PostCreateInput, PostEditInput, User } from '../../@types/types'
-import { PostsRepository } from '../posts-repository'
+import { Comment, CommentCreateInput, PostEditInput } from '../../@types/types'
 import { InMemoryUsersRepository } from './in-memory-users-repository'
+import { CommentsRepository } from '../comments-repository'
 import { InMemoryCommentsPostsRepository } from './in-memory-comments-posts-repository'
 
-export class InMemoryPostsRepository implements PostsRepository {
+export class InMemoryCommentsRepository implements CommentsRepository {
   constructor(
     private readonly userRepository: InMemoryUsersRepository,
     private readonly commentsPostsRepository: InMemoryCommentsPostsRepository,
   ) {}
-  public items: Post[] = []
+  public items: Comment[] = []
 
-  async create({ content, creator_id }: PostCreateInput) {
-    const post = {
+  async create({ content, creator_id, post_id }: CommentCreateInput) {
+    const comment = {
       id: randomUUID(),
       creator_id,
-      content: content,
+      content,
+      post_id,
       created_at: new Date(),
     }
-    this.items.push(post)
+    this.items.push(comment)
 
     await this.commentsPostsRepository.create({
-      provider_id: post.id,
-      is_post: true,
+      provider_id: comment.id,
+      is_post: false,
     })
 
-    return post
+    return comment
   }
 
   async findById(id: string) {
-    const post = this.items.find((item) => item.id === id)
+    const comment = this.items.find((item) => item.id === id)
 
-    if (!post) {
+    if (!comment) {
       return null
     }
 
-    return post
+    return comment
   }
 
   async update({ id, content }: PostEditInput) {
-    const postToEdit = this.items.find((item) => item.id === id)
+    const commentToEdit = this.items.find((item) => item.id === id)
 
-    if (!postToEdit) {
+    if (!commentToEdit) {
       return null
     }
 
-    const post = { ...postToEdit, content, update: new Date() }
+    const comment = { ...commentToEdit, content, update: new Date() }
 
-    return post
+    return comment
   }
 
-  async fetch() {
+  async fetch(postId: string) {
     const users = this.userRepository.items
-    const posts = await Promise.all(
-      this.items.map(async (item) => {
+    const commentsOnPost = this.items.filter((item) => postId === item.post_id)
+
+    const formattedComments = await Promise.all(
+      commentsOnPost.map(async (item) => {
         const id = item.id
+        const postId = item.post_id
         const content = item.content
         const likes = item.likes ?? 0
         const dislikes = item.dislikes ?? 0
@@ -71,28 +75,36 @@ export class InMemoryPostsRepository implements PostsRepository {
           name: user.id,
         }
 
-        return { id, content, likes, dislikes, createdAt, updatedAt, creator }
+        return {
+          id,
+          postId,
+          content,
+          likes,
+          dislikes,
+          createdAt,
+          updatedAt,
+          creator,
+        }
       }),
     )
-
-    return posts
+    return formattedComments
   }
 
   async delete(id: string) {
-    const postIndex = this.items.findIndex((item) => item.id === id)
-    this.items.splice(postIndex, 1)
+    const commentIndex = this.items.findIndex((item) => item.id === id)
+    this.items.splice(commentIndex, 1)
   }
 
   async like(id: string, shouldDecrement: boolean = false) {
-    const post = await this.findById(id)
+    const comment = await this.findById(id)
 
-    if (!post) {
+    if (!comment) {
       throw new Error()
     }
 
     if (shouldDecrement) {
-      const posts = this.items.map((item) => {
-        if (item.id === post.id) {
+      const comments = this.items.map((item) => {
+        if (item.id === comment.id) {
           return {
             ...item,
             likes: item.likes
@@ -104,12 +116,12 @@ export class InMemoryPostsRepository implements PostsRepository {
         }
         return item
       })
-      this.items = posts
+      this.items = comments
       return
     }
 
-    const posts = this.items.map((item) => {
-      if (item.id === post.id) {
+    const comments = this.items.map((item) => {
+      if (item.id === comment.id) {
         return {
           ...item,
           likes: item.likes ? item.likes++ : 1,
@@ -119,18 +131,18 @@ export class InMemoryPostsRepository implements PostsRepository {
       return item
     })
 
-    this.items = posts
+    this.items = comments
   }
   async dislike(id: string, shouldDecrement: boolean = false) {
-    const post = await this.findById(id)
+    const comment = await this.findById(id)
 
-    if (!post) {
+    if (!comment) {
       throw new Error()
     }
 
     if (shouldDecrement) {
-      const posts = this.items.map((item) => {
-        if (item.id === post.id) {
+      const comments = this.items.map((item) => {
+        if (item.id === comment.id) {
           return {
             ...item,
             dislikes: item.dislikes
@@ -142,12 +154,12 @@ export class InMemoryPostsRepository implements PostsRepository {
         }
         return item
       })
-      this.items = posts
+      this.items = comments
       return
     }
 
-    const posts = this.items.map((item) => {
-      if (item.id === post.id) {
+    const comments = this.items.map((item) => {
+      if (item.id === comment.id) {
         return {
           ...item,
           dislikes: item.dislikes ? item.dislikes++ : 1,
@@ -156,6 +168,6 @@ export class InMemoryPostsRepository implements PostsRepository {
 
       return item
     })
-    this.items = posts
+    this.items = comments
   }
 }

@@ -2,23 +2,37 @@ import { expect, describe, it, beforeEach } from 'vitest'
 import { InMemoryPostsRepository } from '../../repositories/in-memory/in-memory-posts-repository'
 import { InMemoryUsersRepository } from '../../repositories/in-memory/in-memory-users-repository'
 import { InMemoryLikeDislikeRepository } from '../../repositories/in-memory/in-memory-like-dislike-repository'
-import { LikeDislikePostUseCase } from './like-dislike-post'
-import { USER_ROLES } from '../../@types/types'
+import { LikeDislikeUseCase } from './like-dislike'
+import { InMemoryCommentsRepository } from '../../repositories/in-memory/in-memory-comments-repository'
+import { InMemoryCommentsPostsRepository } from '../../repositories/in-memory/in-memory-comments-posts-repository'
 
 let likeDislikeRepository: InMemoryLikeDislikeRepository
 let postsRepository: InMemoryPostsRepository
 let usersRepository: InMemoryUsersRepository
-let sut: LikeDislikePostUseCase
+let commentsRepository: InMemoryCommentsRepository
+let commentsPostsRepository: InMemoryCommentsPostsRepository
+let sut: LikeDislikeUseCase
 
-describe('Like Dislike Post Use Case', () => {
+describe('Like Dislike Use Case', () => {
   beforeEach(() => {
-    likeDislikeRepository = new InMemoryLikeDislikeRepository()
+    commentsPostsRepository = new InMemoryCommentsPostsRepository()
+    likeDislikeRepository = new InMemoryLikeDislikeRepository(
+      commentsPostsRepository,
+    )
     usersRepository = new InMemoryUsersRepository()
-    postsRepository = new InMemoryPostsRepository(usersRepository)
-    sut = new LikeDislikePostUseCase(
+    postsRepository = new InMemoryPostsRepository(
+      usersRepository,
+      commentsPostsRepository,
+    )
+    commentsRepository = new InMemoryCommentsRepository(
+      usersRepository,
+      commentsPostsRepository,
+    )
+    sut = new LikeDislikeUseCase(
       likeDislikeRepository,
       postsRepository,
       usersRepository,
+      commentsRepository,
     )
   })
 
@@ -42,14 +56,14 @@ describe('Like Dislike Post Use Case', () => {
 
     await sut.execute({
       like: true,
-      postId: post.id,
+      contentId: post.id,
       userId: user.id,
     })
 
     expect(likeDislikeRepository.items).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          post_id: post.id,
+          content_id: post.id,
           user_id: user.id,
           like: 1,
         }),
@@ -86,14 +100,14 @@ describe('Like Dislike Post Use Case', () => {
 
     await sut.execute({
       like: false,
-      postId: post.id,
+      contentId: post.id,
       userId: user.id,
     })
 
     expect(likeDislikeRepository.items).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          post_id: post.id,
+          content_id: post.id,
           user_id: user.id,
           like: 2,
         }),
@@ -130,13 +144,13 @@ describe('Like Dislike Post Use Case', () => {
 
     await sut.execute({
       like: true,
-      postId: post.id,
+      contentId: post.id,
       userId: user.id,
     })
 
     await sut.execute({
       like: true,
-      postId: post.id,
+      contentId: post.id,
       userId: user.id,
     })
 
@@ -171,13 +185,13 @@ describe('Like Dislike Post Use Case', () => {
 
     await sut.execute({
       like: false,
-      postId: post.id,
+      contentId: post.id,
       userId: user.id,
     })
 
     await sut.execute({
       like: false,
-      postId: post.id,
+      contentId: post.id,
       userId: user.id,
     })
 
@@ -212,20 +226,20 @@ describe('Like Dislike Post Use Case', () => {
 
     await sut.execute({
       like: false,
-      postId: post.id,
+      contentId: post.id,
       userId: user.id,
     })
 
     await sut.execute({
       like: true,
-      postId: post.id,
+      contentId: post.id,
       userId: user.id,
     })
 
     expect(likeDislikeRepository.items).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          post_id: post.id,
+          content_id: post.id,
           user_id: user.id,
           like: 1,
         }),
@@ -262,20 +276,20 @@ describe('Like Dislike Post Use Case', () => {
 
     await sut.execute({
       like: true,
-      postId: post.id,
+      contentId: post.id,
       userId: user.id,
     })
 
     await sut.execute({
       like: false,
-      postId: post.id,
+      contentId: post.id,
       userId: user.id,
     })
 
     expect(likeDislikeRepository.items).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          post_id: post.id,
+          content_id: post.id,
           user_id: user.id,
           like: 2,
         }),

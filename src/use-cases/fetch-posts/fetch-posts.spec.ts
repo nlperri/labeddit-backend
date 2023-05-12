@@ -2,15 +2,24 @@ import { expect, describe, it, beforeEach } from 'vitest'
 import { InMemoryPostsRepository } from '../../repositories/in-memory/in-memory-posts-repository'
 import { FetchPostsUseCase } from './fetch-posts'
 import { InMemoryUsersRepository } from '../../repositories/in-memory/in-memory-users-repository'
+import { InMemoryLikeDislikeRepository } from '../../repositories/in-memory/in-memory-like-dislike-repository'
+import { InMemoryCommentsPostsRepository } from '../../repositories/in-memory/in-memory-comments-posts-repository'
 
 let postsRepository: InMemoryPostsRepository
 let usersRepository: InMemoryUsersRepository
+let likeDislikeRepository: InMemoryLikeDislikeRepository
+let commentsPostsRepository: InMemoryCommentsPostsRepository
 let sut: FetchPostsUseCase
 
 describe('Fetch Posts Use Case', () => {
   beforeEach(() => {
     usersRepository = new InMemoryUsersRepository()
-    postsRepository = new InMemoryPostsRepository(usersRepository)
+    commentsPostsRepository = new InMemoryCommentsPostsRepository()
+    likeDislikeRepository = new InMemoryLikeDislikeRepository()
+    postsRepository = new InMemoryPostsRepository(
+      usersRepository,
+      commentsPostsRepository,
+    )
     sut = new FetchPostsUseCase(postsRepository)
   })
 

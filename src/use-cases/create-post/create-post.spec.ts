@@ -3,15 +3,24 @@ import { InMemoryPostsRepository } from '../../repositories/in-memory/in-memory-
 import { CreatePostUseCase } from './create-post'
 import { InMemoryUsersRepository } from '../../repositories/in-memory/in-memory-users-repository'
 import { ResourceNotFoundError } from '../@errors/resource-not-found-error'
+import { InMemoryLikeDislikeRepository } from '../../repositories/in-memory/in-memory-like-dislike-repository'
+import { InMemoryCommentsPostsRepository } from '../../repositories/in-memory/in-memory-comments-posts-repository'
 
 let postsRepository: InMemoryPostsRepository
 let usersRepository: InMemoryUsersRepository
+let likeDislikeRepository: InMemoryLikeDislikeRepository
+let commentsPostsRepository: InMemoryCommentsPostsRepository
 let sut: CreatePostUseCase
 
 describe('Create Post Use Case', () => {
   beforeEach(() => {
     usersRepository = new InMemoryUsersRepository()
-    postsRepository = new InMemoryPostsRepository(usersRepository)
+    likeDislikeRepository = new InMemoryLikeDislikeRepository()
+    commentsPostsRepository = new InMemoryCommentsPostsRepository()
+    postsRepository = new InMemoryPostsRepository(
+      usersRepository,
+      commentsPostsRepository,
+    )
     sut = new CreatePostUseCase(postsRepository, usersRepository)
   })
 

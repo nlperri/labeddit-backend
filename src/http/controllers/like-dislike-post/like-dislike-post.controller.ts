@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { TokenPayload, USER_ROLES } from '../../../@types/types'
-import { LikeDislikePostUseCase } from '../../../use-cases/like-dislike-post.ts/like-dislike-post'
+import { LikeDislikePostUseCase } from '../../../use-cases/like-dislike-post.ts/like-dislike'
 import { Route, Body, Put, SuccessResponse } from 'tsoa'
 import { HttpResponse } from '../../response/response'
 

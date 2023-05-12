@@ -1,4 +1,5 @@
 import { TokenPayload, USER_ROLES } from '../../@types/types'
+import { CommentsPostsRepository } from '../../repositories/comments-posts-repository'
 import { likeDislikeRepository } from '../../repositories/like-dislike-repository'
 import { PostsRepository } from '../../repositories/posts-repository'
 import { ResourceNotFoundError } from '../@errors/resource-not-found-error'
@@ -13,6 +14,7 @@ export class DeletePostUseCase {
   constructor(
     private postsRepository: PostsRepository,
     private likeDislikeRepository: likeDislikeRepository,
+    private commentsPostsRepository: CommentsPostsRepository,
   ) {}
 
   async execute({ id, user }: DeletePostUseCaseRequest): Promise<void> {
@@ -23,6 +25,8 @@ export class DeletePostUseCase {
     }
     const isUserAdmin = user.role === USER_ROLES.ADMIN
     const isUserTheCreator = user.id === post.creator_id
+
+    await this.commentsPostsRepository.delete(id)
 
     const isPostLiked = await this.likeDislikeRepository.findByIds(id, user.id)
 

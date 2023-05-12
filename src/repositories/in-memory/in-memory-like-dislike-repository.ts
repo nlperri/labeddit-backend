@@ -1,21 +1,25 @@
-import { LikeDislike, LikeDislikePostInput } from '../../@types/types'
+import { LikeDislike, LikeDislikeInput } from '../../@types/types'
 import { likeDislikeRepository } from '../like-dislike-repository'
+import { InMemoryCommentsPostsRepository } from './in-memory-comments-posts-repository'
 
 export class InMemoryLikeDislikeRepository implements likeDislikeRepository {
+  constructor(
+    private readonly commentsPostsRepository: InMemoryCommentsPostsRepository,
+  ) {}
   public items: LikeDislike[] = []
-  async create({ like, postId, userId }: LikeDislikePostInput) {
+  async create({ like, contentId, userId }: LikeDislikeInput) {
     const newLikeDislike = {
       like: like ? 1 : 2,
-      post_id: postId,
+      content_id: contentId,
       user_id: userId,
     }
 
     this.items.push(newLikeDislike)
   }
 
-  async findByIds(postId: string, userId: string) {
+  async findByIds(contentId: string, userId: string) {
     const postAlreadyLiked = this.items.find((item) => {
-      if (item.post_id === postId && item.user_id === userId) {
+      if (item.content_id === contentId && item.user_id === userId) {
         return item
       }
     })
@@ -23,18 +27,18 @@ export class InMemoryLikeDislikeRepository implements likeDislikeRepository {
     return postAlreadyLiked
   }
 
-  async delete(postId: string, userId: string) {
+  async delete(contentId: string, userId: string) {
     const postIndex = this.items.findIndex((item) => {
-      if (item.post_id === postId ?? item.user_id === userId) {
+      if (item.content_id === contentId ?? item.user_id === userId) {
         return item
       }
     })
 
     this.items.splice(postIndex, 1)
   }
-  async update(postId: string, userId: string, likeOrDislike: number) {
+  async update(contentId: string, userId: string, likeOrDislike: number) {
     const post = this.items.map((item) => {
-      if (item.post_id === postId && item.user_id === userId) {
+      if (item.content_id === contentId && item.user_id === userId) {
         return {
           ...item,
           like: likeOrDislike,
@@ -44,5 +48,19 @@ export class InMemoryLikeDislikeRepository implements likeDislikeRepository {
     })
 
     this.items = post
+  }
+
+  async isContentPost(contentId: string) {
+    const providerId = this.commentsPostsRepository.items.find(
+      (item) => contentId === item.provider_id,
+    )
+
+    if (!providerId) {
+      throw new Error()
+    }
+
+    const isPost = providerId.is_post
+
+    return isPost
   }
 }

@@ -28,9 +28,20 @@ export type Post = {
   updated_at?: Date | string
 }
 
+export type Comment = {
+  id: string
+  creator_id: string
+  post_id: string
+  content: string
+  likes?: number
+  dislikes?: number
+  created_at: Date | string
+  updated_at?: Date | string
+}
+
 export type LikeDislike = {
   user_id: string
-  post_id: string
+  content_id: string
   like: number
 }
 
@@ -49,6 +60,17 @@ export type PostCreateInput = {
 }
 
 export type PostEditInput = {
+  id: string
+  content: string
+}
+
+export type CommentCreateInput = {
+  creator_id: string
+  content: string
+  post_id: string
+}
+
+export type CommentEditInput = {
   id: string
   content: string
 }
@@ -72,8 +94,33 @@ export type FetchPostsOutput = {
   }
 }
 
-export type LikeDislikePostInput = {
-  userId: string
+export type FetchPostsCommentsOutput = {
+  id: string
   postId: string
+  content: string
+  likes: number
+  dislikes: number
+  createdAt: string
+  updatedAt?: string
+  creator: {
+    id: string
+    name: string
+  }
+}
+
+export type LikeDislikeInput = {
+  userId: string
+  contentId: string
   like: boolean
+}
+
+export type CommentsPosts = {
+  id: string
+  provider_id: string
+  is_post: boolean
+}
+
+export type CommentsPostsCreateInput = {
+  provider_id: string
+  is_post: boolean
 }
