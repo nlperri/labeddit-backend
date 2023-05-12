@@ -31,7 +31,7 @@ $ npm run dev || $ npm run start
 - [x] Deve ser possível deletar um post;
 - [x] Deve ser possível dar like/dislike em um post;
 - [x] Deve ser possível dar like/dislike em um comentário;
-- [ ] Deve ser possível comentar em um post;
+- [x] Deve ser possível comentar em um post;
 - [ ] Deve ser possível editar um comentário em um post;
 - [ ] Deve ser possível deletar um comentário em um post;
 
