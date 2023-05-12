@@ -80,6 +80,11 @@ export type CommentCreateInput = {
   post_id: string
 }
 
+export type CommentPostCreateInput = {
+  provider_id: string
+  is_post: boolean
+}
+
 export type CommentEditInput = {
   id: string
   content: string
@@ -89,6 +94,12 @@ export type PostEditInputDTO = {
   id: string
   content: string
   post: Post
+}
+
+export type CommentEditInputDTO = {
+  id: string
+  content: string
+  comment: Comment
 }
 
 export type FetchPostsOutput = {

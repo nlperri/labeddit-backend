@@ -1,12 +1,27 @@
 import { LikeDislikeInput } from '../../@types/types'
 import { Db } from '../../database/base-database'
 import { CreateLikeDislikeDTO } from '../../dtos/like-dislike.dto'
+import { ResourceNotFoundError } from '../../use-cases/@errors/resource-not-found-error'
 import { likeDislikeRepository } from '../like-dislike-repository'
 
 export class KnexLikeDislikeRepository
   extends Db
   implements likeDislikeRepository
 {
+  async isContentPost(contentId: string): Promise<boolean> {
+    const content = await Db.connection('comments_posts')
+      .where({ provider_id: contentId })
+      .first()
+
+    if (!content) {
+      throw new ResourceNotFoundError('Inexistent content Id')
+    }
+
+    if (content.is_post) {
+      return true
+    }
+    return false
+  }
   async create({ like, contentId, userId }: LikeDislikeInput) {
     const likeDislike = CreateLikeDislikeDTO.build({ like, contentId, userId })
 
