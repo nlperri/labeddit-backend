@@ -4,21 +4,30 @@ import { FetchPostsUseCase } from './fetch-posts'
 import { InMemoryUsersRepository } from '../../repositories/in-memory/in-memory-users-repository'
 import { InMemoryLikeDislikeRepository } from '../../repositories/in-memory/in-memory-like-dislike-repository'
 import { InMemoryCommentsPostsRepository } from '../../repositories/in-memory/in-memory-comments-posts-repository'
+import { InMemoryCommentsRepository } from '../../repositories/in-memory/in-memory-comments-repository'
 
 let postsRepository: InMemoryPostsRepository
 let usersRepository: InMemoryUsersRepository
 let likeDislikeRepository: InMemoryLikeDislikeRepository
 let commentsPostsRepository: InMemoryCommentsPostsRepository
+let commentsRepository: InMemoryCommentsRepository
 let sut: FetchPostsUseCase
 
 describe('Fetch Posts Use Case', () => {
   beforeEach(() => {
     usersRepository = new InMemoryUsersRepository()
     commentsPostsRepository = new InMemoryCommentsPostsRepository()
-    likeDislikeRepository = new InMemoryLikeDislikeRepository()
+    commentsRepository = new InMemoryCommentsRepository(
+      usersRepository,
+      commentsPostsRepository,
+    )
+    likeDislikeRepository = new InMemoryLikeDislikeRepository(
+      commentsPostsRepository,
+    )
     postsRepository = new InMemoryPostsRepository(
       usersRepository,
       commentsPostsRepository,
+      commentsRepository,
     )
     sut = new FetchPostsUseCase(postsRepository)
   })
@@ -30,17 +39,31 @@ describe('Fetch Posts Use Case', () => {
       password_hash: '123456',
     })
 
-    await postsRepository.create({
+    const post = await postsRepository.create({
       content: 'some-content',
       creator_id: user.id,
     })
 
-    await postsRepository.create({
+    const anotherPost = await postsRepository.create({
       content: 'another-content',
       creator_id: user.id,
     })
 
+    await commentsRepository.create({
+      content: 'some comment',
+      creator_id: user.id,
+      post_id: post.id,
+    })
+
+    await commentsRepository.create({
+      content: 'another comment',
+      creator_id: user.id,
+      post_id: anotherPost.id,
+    })
+
     const { posts } = await sut.execute()
+
+    console.log(posts)
 
     expect(posts).toHaveLength(2)
     expect(posts).toEqual(
@@ -56,6 +79,16 @@ describe('Fetch Posts Use Case', () => {
             id: expect.any(String),
             name: expect.any(String),
           },
+          comments: expect.arrayContaining([
+            expect.objectContaining({
+              id: expect.any(String),
+              creatorId: expect.any(String),
+              likes: expect.any(Number),
+              dislikes: expect.any(Number),
+              createdAt: expect.any(String),
+              updatedAt: expect.any(String),
+            }),
+          ]),
         }),
       ]),
     )

@@ -7,19 +7,26 @@ import { hash } from 'bcryptjs'
 import { USER_ROLES } from '../../@types/types'
 import { UserNotAllowed } from '../@errors/user-not-alowed-error'
 import { InMemoryCommentsPostsRepository } from '../../repositories/in-memory/in-memory-comments-posts-repository'
+import { InMemoryCommentsRepository } from '../../repositories/in-memory/in-memory-comments-repository'
 
 let postsRepository: InMemoryPostsRepository
 let usersRepository: InMemoryUsersRepository
 let commentsPostsRepository: InMemoryCommentsPostsRepository
+let commentsRepository: InMemoryCommentsRepository
 let sut: UpdatePostUseCase
 
 describe('Update Post Use Case', () => {
   beforeEach(() => {
     usersRepository = new InMemoryUsersRepository()
     commentsPostsRepository = new InMemoryCommentsPostsRepository()
+    commentsRepository = new InMemoryCommentsRepository(
+      usersRepository,
+      commentsPostsRepository,
+    )
     postsRepository = new InMemoryPostsRepository(
       usersRepository,
       commentsPostsRepository,
+      commentsRepository,
     )
     sut = new UpdatePostUseCase(postsRepository)
   })

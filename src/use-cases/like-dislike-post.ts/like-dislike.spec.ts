@@ -20,13 +20,14 @@ describe('Like Dislike Use Case', () => {
       commentsPostsRepository,
     )
     usersRepository = new InMemoryUsersRepository()
-    postsRepository = new InMemoryPostsRepository(
-      usersRepository,
-      commentsPostsRepository,
-    )
     commentsRepository = new InMemoryCommentsRepository(
       usersRepository,
       commentsPostsRepository,
+    )
+    postsRepository = new InMemoryPostsRepository(
+      usersRepository,
+      commentsPostsRepository,
+      commentsRepository,
     )
     sut = new LikeDislikeUseCase(
       likeDislikeRepository,

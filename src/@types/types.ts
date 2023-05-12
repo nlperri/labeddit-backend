@@ -39,6 +39,16 @@ export type Comment = {
   updated_at?: Date | string
 }
 
+export type CommentOutput = {
+  id: string
+  creatorId: string
+  content: string
+  likes: number
+  dislikes: number
+  createdAt: string
+  updatedAt: string
+}
+
 export type LikeDislike = {
   user_id: string
   content_id: string
@@ -92,6 +102,7 @@ export type FetchPostsOutput = {
     id: string
     name: string
   }
+  comments: CommentOutput[]
 }
 
 export type FetchPostsCommentsOutput = {

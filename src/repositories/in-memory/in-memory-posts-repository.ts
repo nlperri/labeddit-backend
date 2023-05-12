@@ -3,11 +3,13 @@ import { Post, PostCreateInput, PostEditInput, User } from '../../@types/types'
 import { PostsRepository } from '../posts-repository'
 import { InMemoryUsersRepository } from './in-memory-users-repository'
 import { InMemoryCommentsPostsRepository } from './in-memory-comments-posts-repository'
+import { InMemoryCommentsRepository } from './in-memory-comments-repository'
 
 export class InMemoryPostsRepository implements PostsRepository {
   constructor(
     private readonly userRepository: InMemoryUsersRepository,
     private readonly commentsPostsRepository: InMemoryCommentsPostsRepository,
+    private readonly commentsRepository: InMemoryCommentsRepository,
   ) {}
   public items: Post[] = []
 
@@ -54,6 +56,9 @@ export class InMemoryPostsRepository implements PostsRepository {
     const users = this.userRepository.items
     const posts = await Promise.all(
       this.items.map(async (item) => {
+        const postsComments = this.commentsRepository.items.filter(
+          (comment) => comment.post_id === item.id,
+        )
         const id = item.id
         const content = item.content
         const likes = item.likes ?? 0
@@ -70,8 +75,38 @@ export class InMemoryPostsRepository implements PostsRepository {
           id: item.creator_id,
           name: user.id,
         }
+        const comments = postsComments.map((comment) => {
+          const id = comment.id
+          const creatorId = comment.creator_id
+          const content = comment.content
+          const likes = comment.likes ?? 0
+          const dislikes = comment.dislikes ?? 0
+          const createdAt = new Date(comment.created_at).toISOString()
+          const updatedAt = comment.updated_at
+            ? new Date(comment.updated_at).toISOString()
+            : 'do updates'
 
-        return { id, content, likes, dislikes, createdAt, updatedAt, creator }
+          return {
+            id,
+            creatorId,
+            content,
+            likes,
+            dislikes,
+            createdAt,
+            updatedAt,
+          }
+        })
+
+        return {
+          id,
+          content,
+          likes,
+          dislikes,
+          createdAt,
+          updatedAt,
+          creator,
+          comments,
+        }
       }),
     )
 

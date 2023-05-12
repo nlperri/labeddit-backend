@@ -1,21 +1,16 @@
-# Projeto Labook Back-end
+# Projeto Labeddit Back-end
 
-> Status: Finalizado ✔️
+> Status: Em Desenvolvimento
 
 ### Descrição:
 
-Projeto de criação de API com funcionadades CRUD integradas a criação de usuário (com autenticação em jwt token), posts e função de like/dislike com rotas protegidas, implementados a biblioteca de dados em SQLite3.
+Criação de API com funcionadades CRUD integradas a criação de usuário (com autenticação em jwt token), posts, comentários e função de like/dislike com rotas protegidas, implementados a biblioteca de dados em SQLite3.
 
 ### Deploy:
 
-https://labook-tc2e.onrender.com
-<br>(no ar até 05/06/2023)
+...
 
-### Documentação da API:
-
-https://labook-tc2e.onrender.com/docs
-
-ou
+### Documentação da API
 
 ```ubuntu
 $ npm install
@@ -26,21 +21,19 @@ $ npm run dev || $ npm run start
 
 ```
 
-### Estruturação do banco de dados:
-
-<br>
-
-![table](./src/assets/database.png)
-
 ### RFs (Requisitos funcionais)
 
 - [x] Deve ser possível se cadastrar;
 - [x] Deve ser possível se autenticar;
-- [x] Deve ser possível obter lista de posts;
+- [x] Deve ser possível obter lista de posts com comentários;
 - [x] Deve ser possível criar um post;
 - [x] Deve ser possível editar um post;
 - [x] Deve ser possível deletar um post;
 - [x] Deve ser possível dar like/dislike em um post;
+- [x] Deve ser possível dar like/dislike em um comentário;
+- [ ] Deve ser possível comentar em um post;
+- [ ] Deve ser possível editar um comentário em um post;
+- [ ] Deve ser possível deletar um comentário em um post;
 
 ### RNs (Regras de negócio)
 
@@ -51,6 +44,11 @@ $ npm run dev || $ npm run start
 - [x] Caso usuário dê um like em um post que já tenha dado like, o like é desfeito (deleta o item da tabela);
 - [x] Caso usuário dê um like em um post que tenha dado dislike, o like sobrescreve o dislike.
 - [x] Caso usuário dê um dislike em um post que tenha dado like, o dislike sobrescreve o like.
+- [x] O usuário não deve poder dar like/dislike no próprio comentário;
+- [x] Caso usuário dê um dislike em um comentário que já tenha dado dislike, o dislike é desfeito (deleta o item da tabela);
+- [x] Caso usuário dê um like em um comentário que já tenha dado like, o like é desfeito (deleta o item da tabela);
+- [x] Caso usuário dê um like em um comentário que tenha dado dislike, o like sobrescreve o dislike.
+- [x] Caso usuário dê um dislike em um comentário que tenha dado like, o dislike sobrescreve o like.
 
 ### RNFs (Requisitos não-funcionais)
 
@@ -59,7 +57,6 @@ $ npm run dev || $ npm run start
 - [x] O usuário deve ser identificado por um JJWT (JSON Web Token);
 - [x] Testes unitários;
 - [x] Testes de integração;
-
 
 ### Tecnologias utilizadas:
 

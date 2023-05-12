@@ -8,22 +8,31 @@ import { UserNotAllowed } from '../@errors/user-not-alowed-error'
 import { USER_ROLES } from '../../@types/types'
 import { InMemoryLikeDislikeRepository } from '../../repositories/in-memory/in-memory-like-dislike-repository'
 import { InMemoryCommentsPostsRepository } from '../../repositories/in-memory/in-memory-comments-posts-repository'
+import { InMemoryCommentsRepository } from '../../repositories/in-memory/in-memory-comments-repository'
 
 let postsRepository: InMemoryPostsRepository
 let usersRepository: InMemoryUsersRepository
 let likeDislikeRepository: InMemoryLikeDislikeRepository
 let commentsPostsRepository: InMemoryCommentsPostsRepository
+let commentsRepository: InMemoryCommentsRepository
 let sut: DeletePostUseCase
 
 describe('Delete Post Use Case', () => {
   beforeEach(() => {
     usersRepository = new InMemoryUsersRepository()
     commentsPostsRepository = new InMemoryCommentsPostsRepository()
-    postsRepository = new InMemoryPostsRepository(
+    commentsRepository = new InMemoryCommentsRepository(
       usersRepository,
       commentsPostsRepository,
     )
-    likeDislikeRepository = new InMemoryLikeDislikeRepository()
+    postsRepository = new InMemoryPostsRepository(
+      usersRepository,
+      commentsPostsRepository,
+      commentsRepository,
+    )
+    likeDislikeRepository = new InMemoryLikeDislikeRepository(
+      commentsPostsRepository,
+    )
     sut = new DeletePostUseCase(
       postsRepository,
       likeDislikeRepository,
