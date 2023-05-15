@@ -1,7 +1,6 @@
 import { router } from '../app'
 import { makeAuthenticationMiddleware } from '../use-cases/@factories/make-authentication-middleware'
 import { makeRoutes } from '../use-cases/@factories/make-routes'
-import { HttpResponse } from './response/response'
 
 const {
   authenticate,
@@ -10,7 +9,10 @@ const {
   fetchPosts,
   updatePosts,
   deletePosts,
-  likeDislikePosts,
+  likeDislike,
+  createComment,
+  updateComment,
+  deleteComment,
 } = makeRoutes()
 const authenticationMiddleware = makeAuthenticationMiddleware()
 
@@ -70,9 +72,44 @@ export async function appRoutes() {
     '/posts/:id/like',
     (req, res, next) => authenticationMiddleware.auth(req, res, next),
     async (req, res) => {
-      await likeDislikePosts.execute({
+      await likeDislike.execute({
         requestLike: req.body.like,
+        requestContentId: req.params.id,
+        requestUser: req.user!,
+      })
+      res.status(204).send()
+    },
+  )
+  router.post(
+    '/posts/:id/comments',
+    (req, res, next) => authenticationMiddleware.auth(req, res, next),
+    async (req, res) => {
+      const { payload, statusCode } = await createComment.execute({
+        requestContent: req.body.content,
+        requestUser: req.user!,
         requestPostId: req.params.id,
+      })
+      res.status(statusCode).json(payload)
+    },
+  )
+  router.put(
+    '/comments/:id',
+    (req, res, next) => authenticationMiddleware.auth(req, res, next),
+    async (req, res) => {
+      const { payload, statusCode } = await updateComment.execute({
+        requestContent: req.body.content,
+        requestCommentId: req.params.id,
+        requestUser: req.user!,
+      })
+      res.status(statusCode).json(payload)
+    },
+  )
+  router.delete(
+    '/comments/:id',
+    (req, res, next) => authenticationMiddleware.auth(req, res, next),
+    async (req, res) => {
+      await deleteComment.execute({
+        requestId: req.params.id,
         requestUser: req.user!,
       })
       res.status(204).send()

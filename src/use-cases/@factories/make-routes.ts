@@ -12,7 +12,13 @@ import { makeUpdatePostUseCase } from './make-update-post-use-case'
 import { makeDeletePostUseCase } from './make-delete-post-use-case'
 import { DeletePostController } from '../../http/controllers/delete-post/delete-post.controller'
 import { makeLikeDislikeUseCase } from './make-like-dislike-post'
-import { LikeDislikePostController } from '../../http/controllers/like-dislike-post/like-dislike-post.controller'
+import { LikeDislikeController } from '../../http/controllers/like-dislike-post/like-dislike.controller'
+import { makeCreateCommentUseCase } from './make-create-comment'
+import { makeUpdateCommentUseCase } from './make-update-comment'
+import { makeDeleteCommentUseCase } from './make-delete-comment'
+import { CreateCommentController } from '../../http/controllers/create-comment/create-comment.controller'
+import { UpdateCommentController } from '../../http/controllers/update-comment/update-comment.controller'
+import { DeleteCommentController } from '../../http/controllers/delete-comment/delete-comment.controller'
 
 export function makeRoutes() {
   const tokenManager = new TokenManager()
@@ -27,12 +33,19 @@ export function makeRoutes() {
     tokenManager,
     authenticateUseCase,
   )
+  const createCommentUseCase = makeCreateCommentUseCase()
+  const updateCommentUseCase = makeUpdateCommentUseCase()
+  const deleteCommentUseCase = makeDeleteCommentUseCase()
+
   const register = new RegisterController(registerUseCase)
   const createPost = new CreatePostController(createPostUseCase)
   const fetchPosts = new FetchPostsController(fetchPostsUseCase)
   const updatePosts = new UpdatePostController(updatePostUseCase)
   const deletePosts = new DeletePostController(deletePostUseCase)
-  const likeDislikePosts = new LikeDislikePostController(likeDislikePostUseCase)
+  const likeDislike = new LikeDislikeController(likeDislikePostUseCase)
+  const createComment = new CreateCommentController(createCommentUseCase)
+  const updateComment = new UpdateCommentController(updateCommentUseCase)
+  const deleteComment = new DeleteCommentController(deleteCommentUseCase)
 
   return {
     authenticate,
@@ -41,6 +54,9 @@ export function makeRoutes() {
     fetchPosts,
     updatePosts,
     deletePosts,
-    likeDislikePosts,
+    likeDislike,
+    createComment,
+    updateComment,
+    deleteComment,
   }
 }
