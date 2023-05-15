@@ -13,12 +13,13 @@ class FakeDb extends Db {
   }
   async reset() {
     await Db.connection('likes_dislikes').del()
+    await Db.connection('comments').del()
     await Db.connection('posts').del()
     await Db.connection('users').del()
   }
 }
 
-describe('Like Dislike Post Controller', async () => {
+describe('Like Dislike Controller', async () => {
   let server: supertest.SuperTest<supertest.Test>
   const usersRepository = new KnexUsersRepository()
   const postsRepository = new KnexPostsRepository()

@@ -34,6 +34,7 @@ describe('Like Dislike Use Case', () => {
       postsRepository,
       usersRepository,
       commentsRepository,
+      commentsPostsRepository,
     )
   })
 
@@ -298,6 +299,312 @@ describe('Like Dislike Use Case', () => {
     )
 
     expect(postsRepository.items).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          dislikes: 1,
+          likes: undefined,
+        }),
+      ]),
+    )
+  })
+
+  it('should be able to like a comment that is not already liked or disliked by the user', async () => {
+    const userWithPost = await usersRepository.create({
+      name: 'John Doe',
+      email: 'johndoe@example.com',
+      password_hash: '123456',
+    })
+
+    const user = await usersRepository.create({
+      name: 'Natalia Perri',
+      email: 'natalia@example.com',
+      password_hash: '123456',
+    })
+
+    const post = await postsRepository.create({
+      content: 'some-content',
+      creator_id: userWithPost.id,
+    })
+
+    const comment = await commentsRepository.create({
+      content: 'some content',
+      creator_id: user.id,
+      post_id: post.id,
+    })
+
+    await sut.execute({
+      like: true,
+      contentId: comment.id,
+      userId: userWithPost.id,
+    })
+
+    expect(likeDislikeRepository.items).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          content_id: comment.id,
+          user_id: userWithPost.id,
+          like: 1,
+        }),
+      ]),
+    )
+
+    expect(commentsRepository.items).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          likes: 1,
+          dislikes: undefined,
+        }),
+      ]),
+    )
+  })
+
+  it('should be able to dislike a comment that is not already disliked or liked by the user', async () => {
+    const userWithPost = await usersRepository.create({
+      name: 'John Doe',
+      email: 'johndoe@example.com',
+      password_hash: '123456',
+    })
+
+    const user = await usersRepository.create({
+      name: 'Natalia Perri',
+      email: 'natalia@example.com',
+      password_hash: '123456',
+    })
+
+    const post = await postsRepository.create({
+      content: 'some-content',
+      creator_id: userWithPost.id,
+    })
+
+    const comment = await commentsRepository.create({
+      content: 'some content',
+      creator_id: user.id,
+      post_id: post.id,
+    })
+
+    await sut.execute({
+      like: false,
+      contentId: comment.id,
+      userId: userWithPost.id,
+    })
+
+    expect(likeDislikeRepository.items).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          content_id: comment.id,
+          user_id: userWithPost.id,
+          like: 2,
+        }),
+      ]),
+    )
+
+    expect(commentsRepository.items).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          dislikes: 1,
+          likes: undefined,
+        }),
+      ]),
+    )
+  })
+
+  it('should remove like if user likes a comment that is already liked', async () => {
+    const userWithPost = await usersRepository.create({
+      name: 'John Doe',
+      email: 'johndoe@example.com',
+      password_hash: '123456',
+    })
+
+    const user = await usersRepository.create({
+      name: 'Natalia Perri',
+      email: 'natalia@example.com',
+      password_hash: '123456',
+    })
+
+    const post = await postsRepository.create({
+      content: 'some-content',
+      creator_id: userWithPost.id,
+    })
+
+    const comment = await commentsRepository.create({
+      content: 'some content',
+      creator_id: user.id,
+      post_id: post.id,
+    })
+
+    await sut.execute({
+      like: true,
+      contentId: comment.id,
+      userId: userWithPost.id,
+    })
+
+    await sut.execute({
+      like: true,
+      contentId: comment.id,
+      userId: userWithPost.id,
+    })
+
+    expect(likeDislikeRepository.items).toHaveLength(0)
+    expect(commentsRepository.items).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          dislikes: undefined,
+          likes: undefined,
+        }),
+      ]),
+    )
+  })
+
+  it('should remove dislike if user dislikes a comment that is already disliked', async () => {
+    const userWithPost = await usersRepository.create({
+      name: 'John Doe',
+      email: 'johndoe@example.com',
+      password_hash: '123456',
+    })
+
+    const user = await usersRepository.create({
+      name: 'Natalia Perri',
+      email: 'natalia@example.com',
+      password_hash: '123456',
+    })
+
+    const post = await postsRepository.create({
+      content: 'some-content',
+      creator_id: userWithPost.id,
+    })
+
+    const comment = await commentsRepository.create({
+      content: 'some content',
+      creator_id: user.id,
+      post_id: post.id,
+    })
+
+    await sut.execute({
+      like: false,
+      contentId: comment.id,
+      userId: userWithPost.id,
+    })
+
+    await sut.execute({
+      like: false,
+      contentId: comment.id,
+      userId: userWithPost.id,
+    })
+
+    expect(likeDislikeRepository.items).toHaveLength(0)
+    expect(commentsRepository.items).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          dislikes: undefined,
+          likes: undefined,
+        }),
+      ]),
+    )
+  })
+
+  it('should be able to user likes a comment that is disliked and remove dislike', async () => {
+    const userWithPost = await usersRepository.create({
+      name: 'John Doe',
+      email: 'johndoe@example.com',
+      password_hash: '123456',
+    })
+
+    const user = await usersRepository.create({
+      name: 'Natalia Perri',
+      email: 'natalia@example.com',
+      password_hash: '123456',
+    })
+
+    const post = await postsRepository.create({
+      content: 'some-content',
+      creator_id: userWithPost.id,
+    })
+
+    const comment = await commentsRepository.create({
+      content: 'some content',
+      creator_id: user.id,
+      post_id: post.id,
+    })
+
+    await sut.execute({
+      like: false,
+      contentId: comment.id,
+      userId: userWithPost.id,
+    })
+
+    await sut.execute({
+      like: true,
+      contentId: comment.id,
+      userId: userWithPost.id,
+    })
+
+    expect(likeDislikeRepository.items).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          content_id: comment.id,
+          user_id: userWithPost.id,
+          like: 1,
+        }),
+      ]),
+    )
+
+    expect(commentsRepository.items).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          dislikes: undefined,
+          likes: 1,
+        }),
+      ]),
+    )
+  })
+
+  it('should be able to user dislikes a comment that is liked and remove like', async () => {
+    const userWithPost = await usersRepository.create({
+      name: 'John Doe',
+      email: 'johndoe@example.com',
+      password_hash: '123456',
+    })
+
+    const user = await usersRepository.create({
+      name: 'Natalia Perri',
+      email: 'natalia@example.com',
+      password_hash: '123456',
+    })
+
+    const post = await postsRepository.create({
+      content: 'some-content',
+      creator_id: userWithPost.id,
+    })
+
+    const comment = await commentsRepository.create({
+      content: 'some content',
+      creator_id: user.id,
+      post_id: post.id,
+    })
+
+    await sut.execute({
+      like: true,
+      contentId: comment.id,
+      userId: userWithPost.id,
+    })
+
+    await sut.execute({
+      like: false,
+      contentId: comment.id,
+      userId: userWithPost.id,
+    })
+
+    expect(likeDislikeRepository.items).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          content_id: comment.id,
+          user_id: userWithPost.id,
+          like: 2,
+        }),
+      ]),
+    )
+
+    expect(commentsRepository.items).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           dislikes: 1,

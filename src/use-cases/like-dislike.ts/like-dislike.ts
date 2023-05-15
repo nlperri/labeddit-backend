@@ -1,3 +1,4 @@
+import { CommentsPostsRepository } from '../../repositories/comments-posts-repository'
 import { CommentsRepository } from '../../repositories/comments-repository'
 import { likeDislikeRepository } from '../../repositories/like-dislike-repository'
 import { PostsRepository } from '../../repositories/posts-repository'
@@ -20,6 +21,7 @@ export class LikeDislikeUseCase {
     private postsRepository: PostsRepository,
     private usersRepository: UsersRepository,
     private commentsRepository: CommentsRepository,
+    private commentsPostsRepository: CommentsPostsRepository,
   ) {}
 
   async execute({
@@ -28,19 +30,41 @@ export class LikeDislikeUseCase {
     userId,
   }: LikeDislikeUseCaseRequest): Promise<void> {
     const user = await this.usersRepository.findById(userId)
-    const content = await this.postsRepository.findById(contentId)
+    const post = await this.postsRepository.findById(contentId)
+    const content = await this.commentsPostsRepository.findById(contentId)
 
     if (!content || !user) {
       throw new ResourceNotFoundError()
     }
 
-    if (content.creator_id === userId) {
-      throw new UserNotAllowed()
-    }
-
     const isContentPost = await this.likeDislikeRepository.isContentPost(
       contentId,
     )
+
+    if (isContentPost) {
+      const post = await this.postsRepository.findById(contentId)
+
+      if (!post) {
+        throw new Error()
+      }
+
+      if (post.creator_id === userId) {
+        throw new UserNotAllowed()
+      }
+    }
+
+    if (!isContentPost) {
+      const comment = await this.commentsRepository.findById(contentId)
+
+      if (!comment) {
+        throw new Error()
+      }
+
+      if (comment.creator_id === userId) {
+        throw new UserNotAllowed()
+      }
+    }
+
     const isContentAlreadyLikedOrDisliked =
       await this.likeDislikeRepository.findByIds(contentId, userId)
 
