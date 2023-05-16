@@ -59,8 +59,6 @@ describe('Fetch Comments Use Case', () => {
 
     const { comments } = await sut.execute({ postId: post.id })
 
-    console.log(comments)
-
     expect(comments).toHaveLength(1)
     expect(comments).toEqual(
       expect.arrayContaining([

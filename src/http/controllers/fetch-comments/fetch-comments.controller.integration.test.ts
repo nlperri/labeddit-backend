@@ -92,7 +92,6 @@ describe('Fetch Comments Controller', async () => {
       .set('Authorization', `Bearer ${authToken}`)
       .expect(200)
       .then((response) => {
-        console.log(response.body)
         expect(response.body).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
