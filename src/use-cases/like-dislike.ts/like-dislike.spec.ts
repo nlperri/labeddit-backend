@@ -65,7 +65,7 @@ describe('Like Dislike Use Case', () => {
     expect(likeDislikeRepository.items).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          content_id: post.id,
+          post_id: post.id,
           user_id: user.id,
           like: 1,
         }),
@@ -109,7 +109,7 @@ describe('Like Dislike Use Case', () => {
     expect(likeDislikeRepository.items).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          content_id: post.id,
+          post_id: post.id,
           user_id: user.id,
           like: 2,
         }),
@@ -241,7 +241,7 @@ describe('Like Dislike Use Case', () => {
     expect(likeDislikeRepository.items).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          content_id: post.id,
+          post_id: post.id,
           user_id: user.id,
           like: 1,
         }),
@@ -291,7 +291,7 @@ describe('Like Dislike Use Case', () => {
     expect(likeDislikeRepository.items).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          content_id: post.id,
+          post_id: post.id,
           user_id: user.id,
           like: 2,
         }),
@@ -341,7 +341,7 @@ describe('Like Dislike Use Case', () => {
     expect(likeDislikeRepository.items).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          content_id: comment.id,
+          comment_id: comment.id,
           user_id: userWithPost.id,
           like: 1,
         }),
@@ -391,7 +391,7 @@ describe('Like Dislike Use Case', () => {
     expect(likeDislikeRepository.items).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          content_id: comment.id,
+          comment_id: comment.id,
           user_id: userWithPost.id,
           like: 2,
         }),
@@ -541,7 +541,7 @@ describe('Like Dislike Use Case', () => {
     expect(likeDislikeRepository.items).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          content_id: comment.id,
+          comment_id: comment.id,
           user_id: userWithPost.id,
           like: 1,
         }),
@@ -597,7 +597,7 @@ describe('Like Dislike Use Case', () => {
     expect(likeDislikeRepository.items).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          content_id: comment.id,
+          comment_id: comment.id,
           user_id: userWithPost.id,
           like: 2,
         }),

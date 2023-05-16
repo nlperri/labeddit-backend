@@ -11,11 +11,7 @@ interface DeleteCommentUseCaseRequest {
 }
 
 export class DeleteCommentUseCase {
-  constructor(
-    private commentsRepository: CommentsRepository,
-    private likeDislikeRepository: likeDislikeRepository,
-    private commentsPostsRepository: CommentsPostsRepository,
-  ) {}
+  constructor(private commentsRepository: CommentsRepository) {}
 
   async execute({ id, user }: DeleteCommentUseCaseRequest): Promise<void> {
     const comment = await this.commentsRepository.findById(id)
@@ -25,17 +21,6 @@ export class DeleteCommentUseCase {
     }
     const isUserAdmin = user.role === USER_ROLES.ADMIN
     const isUserTheCreator = user.id === comment.creator_id
-
-    await this.commentsPostsRepository.delete(id)
-
-    const isCommentLiked = await this.likeDislikeRepository.findByIds(
-      id,
-      user.id,
-    )
-
-    if (isCommentLiked) {
-      await this.likeDislikeRepository.delete(id, user.id)
-    }
 
     if (isUserAdmin || isUserTheCreator) {
       await this.commentsRepository.delete(id)

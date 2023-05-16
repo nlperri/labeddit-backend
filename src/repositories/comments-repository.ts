@@ -13,4 +13,5 @@ export interface CommentsRepository {
   delete(id: string): Promise<void>
   like(id: string, shouldDecrement?: boolean): Promise<void>
   dislike(id: string, shouldDecrement?: boolean): Promise<void>
+  findByPostId(id: string): Promise<Comment[] | []>
 }

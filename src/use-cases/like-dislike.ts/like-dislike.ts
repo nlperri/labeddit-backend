@@ -30,6 +30,7 @@ export class LikeDislikeUseCase {
     userId,
   }: LikeDislikeUseCaseRequest): Promise<void> {
     const user = await this.usersRepository.findById(userId)
+
     const content = await this.commentsPostsRepository.findById(contentId)
 
     if (!content || !user) {
@@ -64,42 +65,107 @@ export class LikeDislikeUseCase {
       }
     }
 
-    const isContentAlreadyLikedOrDisliked =
-      await this.likeDislikeRepository.findByIds(contentId, userId)
+    if (isContentPost) {
+      const postId = contentId
+      const isPostAlreadyLikedOrDisliked =
+        await this.likeDislikeRepository.findByIds({ userId, postId })
 
-    if (!isContentAlreadyLikedOrDisliked) {
-      await this.likeDislikeRepository.create({
-        like,
-        contentId,
-        userId,
-      })
-
-      if (isContentPost) {
+      if (!isPostAlreadyLikedOrDisliked) {
+        await this.likeDislikeRepository.create({
+          like,
+          postId,
+          userId,
+        })
         if (like) {
-          await this.postsRepository.dislike(contentId, true)
-          await this.postsRepository.like(contentId)
+          await this.postsRepository.dislike(postId, true)
+          await this.postsRepository.like(postId)
         }
         if (!like) {
-          await this.postsRepository.like(contentId, true)
-          await this.postsRepository.dislike(contentId)
+          await this.postsRepository.like(postId, true)
+          await this.postsRepository.dislike(postId)
         }
         return
       }
+
+      const likeInDatabase = await this.likeDislikeRepository.findByIds({
+        postId,
+        userId,
+      })
+
+      const isLikedInDatabase = likeInDatabase?.like === LIKE
+      const isDislikedInDatabase = likeInDatabase?.like === DISLIKE
+
+      const isLikeTrueAndAlreadyLiked = like && isLikedInDatabase
+      const isLikeTrueAndAlreadyDisliked = like && isDislikedInDatabase
+      const isLikeFalseAndAlreadyDisliked = !like && isDislikedInDatabase
+
+      const isPostDislikedAndUserWantToLike =
+        isLikeTrueAndAlreadyDisliked && like
+      const isPostLikedAndUserWantToDislike = isLikeTrueAndAlreadyLiked && !like
+
+      if (isLikeTrueAndAlreadyLiked) {
+        await this.likeDislikeRepository.delete({ postId, userId })
+        await this.postsRepository.like(postId, true)
+        return
+      }
+
+      if (isLikeFalseAndAlreadyDisliked) {
+        await this.likeDislikeRepository.delete({ postId, userId })
+        await this.postsRepository.dislike(postId, true)
+        return
+      }
+
+      if (isPostDislikedAndUserWantToLike) {
+        await this.postsRepository.like(postId)
+        await this.postsRepository.dislike(postId, true)
+        await this.likeDislikeRepository.update({
+          userId,
+          likeOrDislike: LIKE,
+          postId,
+        })
+        return
+      }
+
+      if (!isPostLikedAndUserWantToDislike) {
+        await this.postsRepository.like(postId, true)
+        await this.postsRepository.dislike(postId)
+        await this.likeDislikeRepository.update({
+          userId,
+          likeOrDislike: DISLIKE,
+          postId,
+        })
+
+        return
+      }
+
+      return
+    }
+
+    const commentId = contentId
+    const isCommentAlreadyLikedOrDisliked =
+      await this.likeDislikeRepository.findByIds({ commentId, userId })
+
+    if (!isCommentAlreadyLikedOrDisliked) {
+      await this.likeDislikeRepository.create({
+        like,
+        commentId,
+        userId,
+      })
       if (like) {
-        await this.commentsRepository.dislike(contentId, true)
-        await this.commentsRepository.like(contentId)
+        await this.commentsRepository.dislike(commentId, true)
+        await this.commentsRepository.like(commentId)
       }
       if (!like) {
-        await this.commentsRepository.like(contentId, true)
-        await this.commentsRepository.dislike(contentId)
+        await this.commentsRepository.like(commentId, true)
+        await this.commentsRepository.dislike(commentId)
       }
       return
     }
 
-    const likeInDatabase = await this.likeDislikeRepository.findByIds(
-      contentId,
+    const likeInDatabase = await this.likeDislikeRepository.findByIds({
+      commentId,
       userId,
-    )
+    })
 
     const isLikedInDatabase = likeInDatabase?.like === LIKE
     const isDislikedInDatabase = likeInDatabase?.like === DISLIKE
@@ -108,65 +174,42 @@ export class LikeDislikeUseCase {
     const isLikeTrueAndAlreadyDisliked = like && isDislikedInDatabase
     const isLikeFalseAndAlreadyDisliked = !like && isDislikedInDatabase
 
-    const isContentDislikedAndUserWantToLike =
+    const isCommentDislikedAndUserWantToLike =
       isLikeTrueAndAlreadyDisliked && like
-    const isContentLikedAndUserWantToDislike =
+    const isCommentLikedAndUserWantToDislike =
       isLikeTrueAndAlreadyLiked && !like
 
-    if (isContentPost) {
-      if (isLikeTrueAndAlreadyLiked) {
-        await this.likeDislikeRepository.delete(contentId, userId)
-        await this.postsRepository.like(contentId, true)
-        return
-      }
-
-      if (isLikeFalseAndAlreadyDisliked) {
-        await this.likeDislikeRepository.delete(contentId, userId)
-        await this.postsRepository.dislike(contentId, true)
-        return
-      }
-
-      if (isContentDislikedAndUserWantToLike) {
-        await this.postsRepository.like(contentId)
-        await this.postsRepository.dislike(contentId, true)
-        await this.likeDislikeRepository.update(contentId, userId, LIKE)
-        return
-      }
-
-      if (!isContentLikedAndUserWantToDislike) {
-        await this.postsRepository.like(contentId, true)
-        await this.postsRepository.dislike(contentId)
-        await this.likeDislikeRepository.update(contentId, userId, DISLIKE)
-
-        return
-      }
-
-      return
-    }
-
     if (isLikeTrueAndAlreadyLiked) {
-      await this.likeDislikeRepository.delete(contentId, userId)
-      await this.commentsRepository.like(contentId, true)
+      await this.likeDislikeRepository.delete({ commentId, userId })
+      await this.commentsRepository.like(commentId, true)
       return
     }
 
     if (isLikeFalseAndAlreadyDisliked) {
-      await this.likeDislikeRepository.delete(contentId, userId)
-      await this.commentsRepository.dislike(contentId, true)
+      await this.likeDislikeRepository.delete({ commentId, userId })
+      await this.commentsRepository.dislike(commentId, true)
       return
     }
 
-    if (isContentDislikedAndUserWantToLike) {
-      await this.commentsRepository.like(contentId)
-      await this.commentsRepository.dislike(contentId, true)
-      await this.likeDislikeRepository.update(contentId, userId, LIKE)
+    if (isCommentDislikedAndUserWantToLike) {
+      await this.commentsRepository.like(commentId)
+      await this.commentsRepository.dislike(commentId, true)
+      await this.likeDislikeRepository.update({
+        userId,
+        likeOrDislike: LIKE,
+        commentId,
+      })
       return
     }
 
-    if (!isContentLikedAndUserWantToDislike) {
-      await this.commentsRepository.like(contentId, true)
-      await this.commentsRepository.dislike(contentId)
-      await this.likeDislikeRepository.update(contentId, userId, DISLIKE)
+    if (!isCommentLikedAndUserWantToDislike) {
+      await this.commentsRepository.like(commentId, true)
+      await this.commentsRepository.dislike(commentId)
+      await this.likeDislikeRepository.update({
+        userId,
+        likeOrDislike: DISLIKE,
+        commentId,
+      })
 
       return
     }

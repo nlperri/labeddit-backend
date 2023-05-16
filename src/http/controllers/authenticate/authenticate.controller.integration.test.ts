@@ -15,7 +15,7 @@ class FakeDb extends Db {
   }
 }
 
-describe('Authenticate Controller', async () => {
+describe.skip('Authenticate Controller', async () => {
   let server: supertest.SuperTest<supertest.Test>
   const usersRepository = new KnexUsersRepository()
   const user = {

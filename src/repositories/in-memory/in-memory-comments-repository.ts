@@ -11,6 +11,11 @@ export class InMemoryCommentsRepository implements CommentsRepository {
   ) {}
   public items: Comment[] = []
 
+  async findByPostId(id: string) {
+    const comment = this.items.filter((item) => item.post_id === id)
+
+    return comment
+  }
   async create({ content, creator_id, post_id }: CommentCreateInput) {
     const comment = {
       id: randomUUID(),

@@ -51,7 +51,8 @@ export type CommentOutput = {
 
 export type LikeDislike = {
   user_id: string
-  content_id: string
+  comment_id?: string
+  post_id?: string
   like: number
 }
 
@@ -116,7 +117,6 @@ export type FetchPostsOutput = {
     id: string
     name: string
   }
-  comments: CommentOutput[]
 }
 
 export type FetchPostsCommentsOutput = {
@@ -135,7 +135,8 @@ export type FetchPostsCommentsOutput = {
 
 export type LikeDislikeInput = {
   userId: string
-  contentId: string
+  postId?: string
+  commentId?: string
   like: boolean
 }
 
@@ -158,4 +159,23 @@ export type CommentsPostsTable = {
 export type CommentsPostsCreateInput = {
   comment_id?: string
   post_id?: string
+}
+
+export type likeDislikePostIdCommentId = {
+  commentId?: string
+  postId?: string
+  userId?: string
+}
+
+export type likeDislikePostIdCommentIdUserId = {
+  commentId?: string
+  postId?: string
+  userId: string
+}
+
+export type likeDislikeUpdate = {
+  commentId?: string
+  postId?: string
+  userId: string
+  likeOrDislike: number
 }

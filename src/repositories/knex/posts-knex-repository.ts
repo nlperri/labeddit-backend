@@ -52,14 +52,9 @@ export class KnexPostsRepository extends Db implements PostsRepository {
         Db.connection.raw(
           'JSON_OBJECT("userId", posts.creator_id, "userName", name) as creator',
         ),
-        Db.connection.raw(
-          'JSON_ARRAYAGG(JSON_OBJECT("id", comments.id, "content", comments.content, "likes", comments.likes, "dislikes", comments.dislikes, "createdAt", comments.created_at, "updatedAt", comments.updated_at, "creator", JSON_OBJECT("userId", comments.creator_id, "userName", users.name))) as comments',
-        ),
       )
       .innerJoin('users', 'users.id', '=', 'posts.creator_id')
-      .leftJoin('comments', 'comments.post_id', '=', 'posts.id')
-      .groupBy('posts.id')
-      .offset(10)
+      .groupBy('posts.created_at')
 
     const formattedResult = results.map((result) => {
       const id = result.id
@@ -69,7 +64,6 @@ export class KnexPostsRepository extends Db implements PostsRepository {
       const createdAt = result.createdAt
       const updatedAt = result.updatedAt ? result.updatedAt : undefined
       const creator = JSON.parse(result.creator)
-      const comments = JSON.parse(result.comments)
 
       return {
         id,
@@ -82,18 +76,6 @@ export class KnexPostsRepository extends Db implements PostsRepository {
           id: creator.userId,
           name: creator.userName,
         },
-        comments: comments.map((comment: any) => ({
-          id: comment.id,
-          content: comment.content,
-          likes: comment.likes,
-          dislikes: comment.dislikes,
-          createdAt: comment.createdAt,
-          updatedAt: comment.updatedAt,
-          creator: {
-            id: comment.creator.userId,
-            name: comment.creator.userName,
-          },
-        })),
       }
     })
 

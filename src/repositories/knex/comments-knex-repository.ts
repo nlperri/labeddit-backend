@@ -1,4 +1,4 @@
-import { CommentCreateInput, PostEditInput } from '../../@types/types'
+import { Comment, CommentCreateInput, PostEditInput } from '../../@types/types'
 import { Db } from '../../database/base-database'
 import { CommentsRepository } from '../comments-repository'
 import { CreateCommentDTO } from '../../dtos/create-comment.dto'
@@ -19,6 +19,12 @@ export class KnexCommentsRepository extends Db implements CommentsRepository {
 
     await Db.connection('comments').insert(comment)
     await Db.connection('comments_posts').insert(commentInCommentsPosts)
+
+    return comment
+  }
+
+  async findByPostId(id: string) {
+    const comment = await Db.connection('comments').where({ post_id: id })
 
     return comment
   }

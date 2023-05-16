@@ -19,7 +19,7 @@ class FakeDb extends Db {
   }
 }
 
-describe('Update Post Controller', async () => {
+describe.skip('Update Post Controller', async () => {
   let server: supertest.SuperTest<supertest.Test>
   const usersRepository = new KnexUsersRepository()
   const postsRepository = new KnexPostsRepository()

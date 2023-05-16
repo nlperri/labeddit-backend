@@ -33,9 +33,17 @@ export class KnexCommentsPostsRepository
     return null
   }
   async findById(id: string) {
-    const result = await Db.connection('comments_posts').where({ id }).first()
+    const post = await Db.connection('comments_posts')
+      .where({ post_id: id })
+      .first()
 
-    return result
+    if (!post) {
+      const comment = await Db.connection('comments_posts')
+        .where({ comment_id: id })
+        .first()
+      return comment
+    }
+    return post
   }
   async delete(id: string) {
     await Db.connection('comments_posts').del().where({ id })
