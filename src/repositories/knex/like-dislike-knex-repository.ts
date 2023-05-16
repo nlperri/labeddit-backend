@@ -17,7 +17,7 @@ export class KnexLikeDislikeRepository
       throw new ResourceNotFoundError('Inexistent content Id')
     }
 
-    if (content.is_post) {
+    if (content.post_id) {
       return true
     }
     return false
@@ -29,14 +29,14 @@ export class KnexLikeDislikeRepository
   }
 
   async findByIds(contentId: string, userId: string) {
-    const post = await Db.connection('likes_dislikes')
+    const content = await Db.connection('likes_dislikes')
       .where({
         content_id: contentId,
         user_id: userId,
       })
       .first()
 
-    return post
+    return content
   }
 
   async delete(contentId: string, userId: string) {

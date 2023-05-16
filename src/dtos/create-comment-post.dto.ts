@@ -1,18 +1,37 @@
 import { randomUUID } from 'crypto'
-import { CommentPostCreateInput, CommentsPosts } from '../@types/types'
+import {
+  CommentCreateInputDTO,
+  CommentsPosts,
+  PostCreateInputDTO,
+  PostsComments,
+} from '../@types/types'
 
-export class CreateCommentPostDTO {
-  private commentPost: CommentsPosts
-  private constructor(data: CommentPostCreateInput) {
-    this.commentPost = {
+export class CreateCommentsPostsDTO {
+  private comment: CommentsPosts
+  private constructor(data: CommentCreateInputDTO) {
+    this.comment = {
       id: randomUUID(),
-      provider_id: data.provider_id,
-      is_post: data.is_post,
+      comment_id: data.comment_id,
     }
   }
 
-  static build(input: CommentPostCreateInput) {
-    const { commentPost } = new CreateCommentPostDTO(input)
-    return commentPost
+  static build(input: CommentCreateInputDTO) {
+    const { comment } = new CreateCommentsPostsDTO(input)
+    return comment
+  }
+}
+
+export class CreatePostsCommentsDTO {
+  private post: PostsComments
+  private constructor(data: PostCreateInputDTO) {
+    this.post = {
+      id: randomUUID(),
+      post_id: data.post_id,
+    }
+  }
+
+  static build(input: PostCreateInputDTO) {
+    const { post } = new CreatePostsCommentsDTO(input)
+    return post
   }
 }

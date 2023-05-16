@@ -63,8 +63,6 @@ describe('Fetch Posts Use Case', () => {
 
     const { posts } = await sut.execute()
 
-    console.log(posts)
-
     expect(posts).toHaveLength(2)
     expect(posts).toEqual(
       expect.arrayContaining([

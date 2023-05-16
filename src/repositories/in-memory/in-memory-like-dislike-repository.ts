@@ -52,15 +52,11 @@ export class InMemoryLikeDislikeRepository implements likeDislikeRepository {
 
   async isContentPost(contentId: string) {
     const providerId = this.commentsPostsRepository.items.find(
-      (item) => contentId === item.provider_id,
+      (item) => contentId === item.post_id,
     )
 
-    if (!providerId) {
-      throw new Error()
-    }
+    const postId = providerId?.post_id
 
-    const isPost = providerId.is_post
-
-    return isPost
+    return !!postId
   }
 }

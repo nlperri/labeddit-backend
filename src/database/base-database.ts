@@ -2,7 +2,7 @@ import { knex } from 'knex'
 import { env } from '../env'
 
 const DB_TEST_PATH = env.NODE_ENV === 'test'
-const integrationTestDbPath = './src/database/labook-test.db'
+const integrationTestDbPath = './src/database/labeddit-test.db'
 export abstract class Db {
   protected static connection = knex({
     client: 'sqlite3',

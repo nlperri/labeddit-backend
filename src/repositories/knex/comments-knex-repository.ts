@@ -2,7 +2,7 @@ import { CommentCreateInput, PostEditInput } from '../../@types/types'
 import { Db } from '../../database/base-database'
 import { CommentsRepository } from '../comments-repository'
 import { CreateCommentDTO } from '../../dtos/create-comment.dto'
-import { CreateCommentPostDTO } from '../../dtos/create-comment-post.dto'
+import { CreateCommentsPostsDTO } from '../../dtos/create-comment-post.dto'
 import { UpdateCommentDTO } from '../../dtos/update-comment.dto'
 
 export class KnexCommentsRepository extends Db implements CommentsRepository {
@@ -13,9 +13,8 @@ export class KnexCommentsRepository extends Db implements CommentsRepository {
       post_id,
     })
 
-    const commentInCommentsPosts = CreateCommentPostDTO.build({
-      provider_id: comment.id,
-      is_post: false,
+    const commentInCommentsPosts = CreateCommentsPostsDTO.build({
+      comment_id: comment.id,
     })
 
     await Db.connection('comments').insert(comment)

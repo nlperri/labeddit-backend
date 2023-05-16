@@ -3,16 +3,14 @@ import { Db } from '../../database/base-database'
 import { PostsRepository } from '../posts-repository'
 import { CreatePostDTO } from '../../dtos/create-post.dto'
 import { UpdatePostDTO } from '../../dtos/update-post.dto'
-import { randomUUID } from 'node:crypto'
-import { CreateCommentPostDTO } from '../../dtos/create-comment-post.dto'
+import { CreatePostsCommentsDTO } from '../../dtos/create-comment-post.dto'
 
 export class KnexPostsRepository extends Db implements PostsRepository {
   async create({ content, creator_id }: PostCreateInput) {
     const post = CreatePostDTO.build({ content, creator_id })
 
-    const postInCommentsPosts = CreateCommentPostDTO.build({
-      provider_id: post.id,
-      is_post: true,
+    const postInCommentsPosts = CreatePostsCommentsDTO.build({
+      post_id: post.id,
     })
 
     await Db.connection('posts').insert(post)

@@ -11,6 +11,8 @@ class FakeDb extends Db {
     super()
   }
   async reset() {
+    await Db.connection('likes_dislikes').del()
+    await Db.connection('comments_posts').del()
     await Db.connection('posts').del()
     await Db.connection('users').del()
   }

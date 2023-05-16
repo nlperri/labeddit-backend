@@ -80,9 +80,12 @@ export type CommentCreateInput = {
   post_id: string
 }
 
-export type CommentPostCreateInput = {
-  provider_id: string
-  is_post: boolean
+export type CommentCreateInputDTO = {
+  comment_id: string
+}
+
+export type PostCreateInputDTO = {
+  post_id: string
 }
 
 export type CommentEditInput = {
@@ -138,11 +141,21 @@ export type LikeDislikeInput = {
 
 export type CommentsPosts = {
   id: string
-  provider_id: string
-  is_post: boolean
+  comment_id: string
+}
+
+export type PostsComments = {
+  id: string
+  post_id: string
+}
+
+export type CommentsPostsTable = {
+  id: string
+  comment_id?: string
+  post_id?: string
 }
 
 export type CommentsPostsCreateInput = {
-  provider_id: string
-  is_post: boolean
+  comment_id?: string
+  post_id?: string
 }

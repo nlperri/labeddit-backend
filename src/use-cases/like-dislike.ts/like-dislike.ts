@@ -30,7 +30,6 @@ export class LikeDislikeUseCase {
     userId,
   }: LikeDislikeUseCaseRequest): Promise<void> {
     const user = await this.usersRepository.findById(userId)
-    const post = await this.postsRepository.findById(contentId)
     const content = await this.commentsPostsRepository.findById(contentId)
 
     if (!content || !user) {

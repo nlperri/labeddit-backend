@@ -23,8 +23,7 @@ export class InMemoryPostsRepository implements PostsRepository {
     this.items.push(post)
 
     await this.commentsPostsRepository.create({
-      provider_id: post.id,
-      is_post: true,
+      post_id: post.id,
     })
 
     return post

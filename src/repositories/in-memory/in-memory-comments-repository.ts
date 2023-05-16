@@ -22,8 +22,7 @@ export class InMemoryCommentsRepository implements CommentsRepository {
     this.items.push(comment)
 
     await this.commentsPostsRepository.create({
-      provider_id: comment.id,
-      is_post: false,
+      comment_id: comment.id,
     })
 
     return comment

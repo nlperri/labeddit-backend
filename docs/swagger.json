@@ -39,6 +39,124 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"TComment": {
+				"properties": {
+					"updated_at": {
+						"anyOf": [
+							{
+								"type": "string",
+								"format": "date-time"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"created_at": {
+						"anyOf": [
+							{
+								"type": "string",
+								"format": "date-time"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"dislikes": {
+						"type": "number",
+						"format": "double"
+					},
+					"likes": {
+						"type": "number",
+						"format": "double"
+					},
+					"content": {
+						"type": "string"
+					},
+					"post_id": {
+						"type": "string"
+					},
+					"creator_id": {
+						"type": "string"
+					},
+					"id": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"created_at",
+					"content",
+					"post_id",
+					"creator_id",
+					"id"
+				],
+				"type": "object"
+			},
+			"HttpResponse_TComment_": {
+				"properties": {
+					"payload": {
+						"$ref": "#/components/schemas/TComment"
+					},
+					"statusCode": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"payload",
+					"statusCode"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"USER_ROLES": {
+				"enum": [
+					"NORMAL",
+					"ADMIN"
+				],
+				"type": "string"
+			},
+			"TokenPayload": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"role": {
+						"$ref": "#/components/schemas/USER_ROLES"
+					}
+				},
+				"required": [
+					"id",
+					"name",
+					"role"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreateCommentRequestContent": {
+				"properties": {
+					"requestContent": {
+						"type": "string"
+					},
+					"requestUser": {
+						"$ref": "#/components/schemas/TokenPayload"
+					},
+					"requestPostId": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"requestContent",
+					"requestUser",
+					"requestPostId"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"TPost": {
 				"properties": {
 					"updated_at": {
@@ -106,33 +224,6 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"USER_ROLES": {
-				"enum": [
-					"NORMAL",
-					"ADMIN"
-				],
-				"type": "string"
-			},
-			"TokenPayload": {
-				"properties": {
-					"id": {
-						"type": "string"
-					},
-					"name": {
-						"type": "string"
-					},
-					"role": {
-						"$ref": "#/components/schemas/USER_ROLES"
-					}
-				},
-				"required": [
-					"id",
-					"name",
-					"role"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
 			"CreatePostRequestContent": {
 				"properties": {
 					"requestContent": {
@@ -144,6 +235,22 @@
 				},
 				"required": [
 					"requestContent",
+					"requestUser"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"DeleteCommentRequest": {
+				"properties": {
+					"requestId": {
+						"type": "string"
+					},
+					"requestUser": {
+						"$ref": "#/components/schemas/TokenPayload"
+					}
+				},
+				"required": [
+					"requestId",
 					"requestUser"
 				],
 				"type": "object",
@@ -165,8 +272,51 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"CommentOutput": {
+				"properties": {
+					"updatedAt": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string"
+					},
+					"dislikes": {
+						"type": "number",
+						"format": "double"
+					},
+					"likes": {
+						"type": "number",
+						"format": "double"
+					},
+					"content": {
+						"type": "string"
+					},
+					"creatorId": {
+						"type": "string"
+					},
+					"id": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"updatedAt",
+					"createdAt",
+					"dislikes",
+					"likes",
+					"content",
+					"creatorId",
+					"id"
+				],
+				"type": "object"
+			},
 			"FetchPostsOutput": {
 				"properties": {
+					"comments": {
+						"items": {
+							"$ref": "#/components/schemas/CommentOutput"
+						},
+						"type": "array"
+					},
 					"creator": {
 						"properties": {
 							"name": {
@@ -204,6 +354,7 @@
 					}
 				},
 				"required": [
+					"comments",
 					"creator",
 					"createdAt",
 					"dislikes",
@@ -233,12 +384,12 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"LikeDislikePostRequest": {
+			"LikeDislikeRequest": {
 				"properties": {
 					"requestLike": {
 						"type": "boolean"
 					},
-					"requestPostId": {
+					"requestContentId": {
 						"type": "string"
 					},
 					"requestUser": {
@@ -247,7 +398,7 @@
 				},
 				"required": [
 					"requestLike",
-					"requestPostId",
+					"requestContentId",
 					"requestUser"
 				],
 				"type": "object",
@@ -326,6 +477,97 @@
 					"name",
 					"email",
 					"password"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Comment": {
+				"properties": {
+					"updated_at": {
+						"anyOf": [
+							{
+								"type": "string",
+								"format": "date-time"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"created_at": {
+						"anyOf": [
+							{
+								"type": "string",
+								"format": "date-time"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"dislikes": {
+						"type": "number",
+						"format": "double"
+					},
+					"likes": {
+						"type": "number",
+						"format": "double"
+					},
+					"content": {
+						"type": "string"
+					},
+					"post_id": {
+						"type": "string"
+					},
+					"creator_id": {
+						"type": "string"
+					},
+					"id": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"created_at",
+					"content",
+					"post_id",
+					"creator_id",
+					"id"
+				],
+				"type": "object"
+			},
+			"HttpResponse_Comment_": {
+				"properties": {
+					"payload": {
+						"$ref": "#/components/schemas/Comment"
+					},
+					"statusCode": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"payload",
+					"statusCode"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"UpdateCommentRequestContent": {
+				"properties": {
+					"requestContent": {
+						"type": "string"
+					},
+					"requestCommentId": {
+						"type": "string"
+					},
+					"requestUser": {
+						"$ref": "#/components/schemas/TokenPayload"
+					}
+				},
+				"required": [
+					"requestContent",
+					"requestCommentId",
+					"requestUser"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -435,7 +677,7 @@
 				"operationId": "Execute",
 				"responses": {
 					"200": {
-						"description": "Ok",
+						"description": "Success",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -459,12 +701,41 @@
 				}
 			}
 		},
+		"/posts/{id}/comments": {
+			"post": {
+				"operationId": "Execute",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HttpResponse_TComment_"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateCommentRequestContent"
+							}
+						}
+					}
+				}
+			}
+		},
 		"/posts": {
 			"post": {
 				"operationId": "Execute",
 				"responses": {
-					"200": {
-						"description": "Ok",
+					"201": {
+						"description": "Created",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -491,7 +762,7 @@
 				"operationId": "Execute",
 				"responses": {
 					"200": {
-						"description": "Ok",
+						"description": "Success",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -505,8 +776,28 @@
 				"parameters": []
 			}
 		},
-		"/posts/{id}": {
+		"/comments/{id}": {
 			"delete": {
+				"operationId": "Execute",
+				"responses": {
+					"200": {
+						"description": "Success"
+					}
+				},
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/DeleteCommentRequest"
+							}
+						}
+					}
+				}
+			},
+			"put": {
 				"operationId": "Execute",
 				"responses": {
 					"200": {
@@ -514,10 +805,32 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/HttpResponse_string_"
+									"$ref": "#/components/schemas/HttpResponse_Comment_"
 								}
 							}
 						}
+					}
+				},
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateCommentRequestContent"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/posts/{id}": {
+			"delete": {
+				"operationId": "Execute",
+				"responses": {
+					"200": {
+						"description": "Success"
 					}
 				},
 				"security": [],
@@ -565,8 +878,8 @@
 			"put": {
 				"operationId": "Execute",
 				"responses": {
-					"204": {
-						"description": "No content"
+					"200": {
+						"description": "Success"
 					}
 				},
 				"security": [],
@@ -576,7 +889,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/LikeDislikePostRequest"
+								"$ref": "#/components/schemas/LikeDislikeRequest"
 							}
 						}
 					}

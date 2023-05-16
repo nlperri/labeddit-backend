@@ -1,36 +1,68 @@
-import { randomUUID } from 'node:crypto'
-import { CommentsPostsCreateInput, CommentsPosts } from '../../@types/types'
+import {
+  CommentsPostsCreateInput,
+  CommentsPostsTable,
+} from '../../@types/types'
 import { CommentsPostsRepository } from '../comments-posts-repository'
+import {
+  CreateCommentsPostsDTO,
+  CreatePostsCommentsDTO,
+} from '../../dtos/create-comment-post.dto'
 
 export class InMemoryCommentsPostsRepository
   implements CommentsPostsRepository
 {
-  public items: CommentsPosts[] = []
+  public items: CommentsPostsTable[] = []
 
-  async create({ provider_id, is_post }: CommentsPostsCreateInput) {
-    const commentsPosts = {
-      id: randomUUID(),
-      provider_id,
-      is_post,
+  async create({ post_id, comment_id }: CommentsPostsCreateInput) {
+    if (comment_id) {
+      const result = CreateCommentsPostsDTO.build({
+        comment_id,
+      })
+
+      this.items.push(result)
+      return result
     }
 
-    this.items.push(commentsPosts)
+    if (post_id) {
+      const result = CreatePostsCommentsDTO.build({
+        post_id,
+      })
 
-    return commentsPosts
+      this.items.push(result)
+      return result
+    }
+
+    return null
   }
   async findById(id: string) {
-    const commentsPosts = this.items.find((item) => item.provider_id === id)
+    const commentsPosts = this.items.find((item) => item.comment_id === id)
 
-    if (!commentsPosts) {
-      return null
+    if (commentsPosts) {
+      return commentsPosts
     }
 
-    return commentsPosts
+    const postsComments = this.items.find((item) => item.post_id === id)
+
+    if (postsComments) {
+      return postsComments
+    }
+
+    return null
   }
   async delete(id: string) {
     const commentsPostsIndex = this.items.findIndex(
-      (item) => item.provider_id === id,
+      (item) => item.comment_id === id,
     )
-    this.items.splice(commentsPostsIndex, 1)
+
+    if (commentsPostsIndex > -1) {
+      this.items.splice(commentsPostsIndex, 1)
+      return
+    }
+
+    const postsCommentsIndex = this.items.findIndex(
+      (item) => item.post_id === id,
+    )
+
+    this.items.splice(postsCommentsIndex, 1)
   }
 }
