@@ -10,7 +10,6 @@ export class CreateCommentsPostsDTO {
   private comment: CommentsPosts
   private constructor(data: CommentCreateInputDTO) {
     this.comment = {
-      id: randomUUID(),
       comment_id: data.comment_id,
     }
   }
@@ -25,7 +24,6 @@ export class CreatePostsCommentsDTO {
   private post: PostsComments
   private constructor(data: PostCreateInputDTO) {
     this.post = {
-      id: randomUUID(),
       post_id: data.post_id,
     }
   }

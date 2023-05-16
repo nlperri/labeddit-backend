@@ -10,7 +10,7 @@ class FakeDb extends Db {
   }
 }
 
-describe.skip('Register Controller', () => {
+describe('Register Controller', () => {
   let server: supertest.SuperTest<supertest.Test>
 
   const user = {

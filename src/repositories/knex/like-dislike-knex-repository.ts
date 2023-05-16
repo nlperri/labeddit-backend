@@ -76,7 +76,7 @@ export class KnexLikeDislikeRepository
     if (postId) {
       const post = await Db.connection('likes_dislikes')
         .where({
-          post_di: postId,
+          post_id: postId,
           user_id: userId,
         })
         .first()
