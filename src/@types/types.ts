@@ -119,6 +119,19 @@ export type FetchPostsOutput = {
   }
 }
 
+export type FetchCommentsOutput = {
+  id: string
+  content: string
+  likes: number
+  dislikes: number
+  createdAt: string
+  updatedAt?: string
+  creator: {
+    id: string
+    name: string
+  }
+}
+
 export type FetchPostsCommentsOutput = {
   id: string
   postId: string

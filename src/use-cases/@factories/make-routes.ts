@@ -19,6 +19,8 @@ import { makeDeleteCommentUseCase } from './make-delete-comment'
 import { CreateCommentController } from '../../http/controllers/create-comment/create-comment.controller'
 import { UpdateCommentController } from '../../http/controllers/update-comment/update-comment.controller'
 import { DeleteCommentController } from '../../http/controllers/delete-comment/delete-comment.controller'
+import { makeFetchCommentsUseCase } from './make-fetch-comments-use-case'
+import { FetchCommentsController } from '../../http/controllers/fetch-comments/fetch-comments.controller'
 
 export function makeRoutes() {
   const tokenManager = new TokenManager()
@@ -36,6 +38,7 @@ export function makeRoutes() {
   const createCommentUseCase = makeCreateCommentUseCase()
   const updateCommentUseCase = makeUpdateCommentUseCase()
   const deleteCommentUseCase = makeDeleteCommentUseCase()
+  const fetchCommentsUseCase = makeFetchCommentsUseCase()
 
   const register = new RegisterController(registerUseCase)
   const createPost = new CreatePostController(createPostUseCase)
@@ -46,6 +49,7 @@ export function makeRoutes() {
   const createComment = new CreateCommentController(createCommentUseCase)
   const updateComment = new UpdateCommentController(updateCommentUseCase)
   const deleteComment = new DeleteCommentController(deleteCommentUseCase)
+  const fetchComments = new FetchCommentsController(fetchCommentsUseCase)
 
   return {
     authenticate,
@@ -58,5 +62,6 @@ export function makeRoutes() {
     createComment,
     updateComment,
     deleteComment,
+    fetchComments,
   }
 }

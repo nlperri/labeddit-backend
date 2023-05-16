@@ -33,11 +33,7 @@ describe('Delete Post Use Case', () => {
     likeDislikeRepository = new InMemoryLikeDislikeRepository(
       commentsPostsRepository,
     )
-    sut = new DeletePostUseCase(
-      postsRepository,
-      likeDislikeRepository,
-      commentsPostsRepository,
-    )
+    sut = new DeletePostUseCase(postsRepository)
   })
 
   it('should be able to delete a post', async () => {
@@ -125,7 +121,7 @@ describe('Delete Post Use Case', () => {
 
     await likeDislikeRepository.create({
       like: true,
-      contentId: post.id,
+      postId: post.id,
       userId: user.id,
     })
 
