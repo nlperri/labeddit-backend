@@ -11,7 +11,7 @@
     "test:integration": "vitest integration  --threads=false",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "test:ui": "vitest --ui",
+    "test:ui": "vitest --ui --threads=false",
     "swagger": "tsoa routes && tsoa spec",
     "predev": "npm run tsoa:docs",
     "tsoa:docs": "",

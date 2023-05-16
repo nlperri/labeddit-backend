@@ -63,7 +63,7 @@ export class KnexCommentsRepository extends Db implements CommentsRepository {
         'comments.created_at as createdAt',
         'comments.updated_at as updatedAt',
         Db.connection.raw(
-          'JSON_OBJECT("id", comments.creator_id, "name", users.name) as creator',
+          'JSON_OBJECT("userId", comments.creator_id, "userName", name) as creator',
         ),
       )
       .innerJoin(usersTable, 'users.id', '=', 'comments.creator_id')
@@ -88,8 +88,8 @@ export class KnexCommentsRepository extends Db implements CommentsRepository {
         createdAt,
         updatedAt,
         creator: {
-          id: creator.id,
-          name: creator.name,
+          id: creator.userId,
+          name: creator.userName,
         },
       }
     })
