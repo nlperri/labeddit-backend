@@ -3,14 +3,11 @@ import { RegisterUseCase } from '../../../use-cases/register/register'
 import {
   Body,
   Post,
-  Produces,
-  Res,
-  Response,
   Route,
   SuccessResponse,
 } from 'tsoa'
 import { HttpResponse } from '../../response/response'
-import { USER_ROLES, User } from '../../../@types/types'
+import { TokenManager } from '../../token-manager'
 
 interface RegisterRequestBody {
   name: string
@@ -20,13 +17,14 @@ interface RegisterRequestBody {
 
 @Route('users')
 export class RegisterController {
-  constructor(private registerUseCase: RegisterUseCase) {}
+  constructor(private registerUseCase: RegisterUseCase,
+    private tokenManager: TokenManager) {}
 
   @SuccessResponse('201', 'Created')
   @Post('register')
   async execute(
     @Body() body: RegisterRequestBody,
-  ): Promise<HttpResponse<Omit<User, 'password'>>> {
+  ): Promise<HttpResponse<string>> {
     const registerBodySchema = z.object({
       name: z.string(),
       email: z.string().email(),
@@ -39,13 +37,12 @@ export class RegisterController {
       password,
     })
 
-    const userResponse = {
+    const token = this.tokenManager.createToken({
       id: user.id,
       name: user.name,
-      email: user.email,
-      createdAt: user.created_at,
-    }
+      role: user.role,
+    })
 
-    return new HttpResponse<Omit<User, 'password'>>(userResponse, 201)
+    return new HttpResponse<string>(token, 201)
   }
 }

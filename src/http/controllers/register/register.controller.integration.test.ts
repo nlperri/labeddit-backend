@@ -42,15 +42,13 @@ describe('Register Controller', () => {
       })
   })
 
-  it('should register a new user when receive a properly body', async () => {
+  it('should register token when receive a properly body', async () => {
     await server
       .post('/users/register')
       .send(user)
       .expect(201)
       .then((response) => {
-        expect(response.body.id).toBeDefined()
-        expect(response.body.name).toBe('test')
-        expect(response.body.email).toBe('test@gmail.com')
+        expect(response.body).toEqual(expect.any(String))
       })
   })
   it('should return status code 409 conflict when create user with same email', async () => {

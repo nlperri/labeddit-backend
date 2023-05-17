@@ -3,10 +3,10 @@ import { TokenManager } from '../../token-manager'
 import { AuthenticateUseCase } from '../../../use-cases/authenticate/authenticate'
 import {
   Post,
-  Res as TsoaResponse,
+ 
   Route,
   Body,
-  Response,
+
   SuccessResponse,
 } from 'tsoa'
 import { HttpResponse } from '../../response/response'

@@ -43,7 +43,7 @@ export function makeRoutes() {
   const fetchCommentsUseCase = makeFetchCommentsUseCase()
   const getPostUseCase = makeGetPostUseCase()
 
-  const register = new RegisterController(registerUseCase)
+  const register = new RegisterController(registerUseCase,tokenManager)
   const createPost = new CreatePostController(createPostUseCase)
   const fetchPosts = new FetchPostsController(fetchPostsUseCase)
   const updatePosts = new UpdatePostController(updatePostUseCase)
