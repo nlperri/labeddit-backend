@@ -1,9 +1,10 @@
 import {
   LikeDislike,
   LikeDislikeInput,
-  likeDislikePostIdCommentId,
-  likeDislikePostIdCommentIdUserId,
-  likeDislikeUpdate,
+  LikeDislikePostIdCommentId,
+  LikeDislikePostIdCommentIdUserId,
+  LikeDislikeUpdate,
+ 
 } from '../../@types/types'
 import { likeDislikeRepository } from '../like-dislike-repository'
 import { InMemoryCommentsPostsRepository } from './in-memory-comments-posts-repository'
@@ -38,7 +39,7 @@ export class InMemoryLikeDislikeRepository implements likeDislikeRepository {
     userId,
     postId,
     commentId,
-  }: likeDislikePostIdCommentIdUserId) {
+  }: LikeDislikePostIdCommentIdUserId) {
     if (postId) {
       const postAlreadyLiked = this.items.find((item) => {
         if (item.post_id === postId && item.user_id === userId) {
@@ -56,7 +57,7 @@ export class InMemoryLikeDislikeRepository implements likeDislikeRepository {
     return commentAlreadyLiked
   }
 
-  async delete({ commentId, postId, userId }: likeDislikePostIdCommentId) {
+  async delete({ commentId, postId, userId }: LikeDislikePostIdCommentId) {
     if (userId) {
       if (postId) {
         const postIndex = this.items.findIndex((item) => {
@@ -93,7 +94,7 @@ export class InMemoryLikeDislikeRepository implements likeDislikeRepository {
     postId,
     userId,
     likeOrDislike,
-  }: likeDislikeUpdate) {
+  }: LikeDislikeUpdate) {
     if (postId) {
       const post = this.items.map((item) => {
         if (item.post_id === postId && item.user_id === userId) {
@@ -135,7 +136,7 @@ export class InMemoryLikeDislikeRepository implements likeDislikeRepository {
   async findById({
     commentId,
     postId,
-  }: likeDislikePostIdCommentId): Promise<LikeDislike | undefined> {
+  }: LikeDislikePostIdCommentId): Promise<LikeDislike | undefined> {
     if (postId) {
       const post = this.items.find((item) => item.post_id === postId)
 

@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto'
-import { Post, PostCreateInput, PostEditInput, User } from '../../@types/types'
+import { Post, PostCreateInput, PostEditInput, User, getPost } from '../../@types/types'
 import { PostsRepository } from '../posts-repository'
 import { InMemoryUsersRepository } from './in-memory-users-repository'
 import { InMemoryCommentsPostsRepository } from './in-memory-comments-posts-repository'
@@ -51,13 +51,55 @@ export class InMemoryPostsRepository implements PostsRepository {
     return post
   }
 
+  async getPost(id: string) {
+    const post = this.items.find((item) => item.id === id);
+    if (!post) {
+      return null;
+    }
+    const user = this.userRepository.items.find(item=>item.id === post.creator_id)
+
+    if(!user){
+      return null
+    }
+
+
+    const comments =  this.commentsRepository.items.filter((item) => item.post_id === id);
+
+    const formattedPost = {
+      id: post.id,
+      content: post.content.substring(0, 115).concat('...'),
+      likes: post.likes ?? 0,
+      dislikes: post.dislikes ?? 0,
+      createdAt: new Date(post.created_at).toISOString(),
+      updatedAt: post.updated_at
+      ? new Date(post.updated_at).toISOString()
+      : 'no updates',
+      creator: {id: user.id, name: user.name},
+      comments: comments.map((comment) => {
+        const user = this.userRepository.items.find(item=>item.id === comment.creator_id)
+        return {
+          id: comment.id,
+          content: comment.content,
+          likes: comment.likes ?? 0,
+          dislikes: comment.dislikes ?? 0,
+          createdAt: new Date(comment.created_at).toISOString(),
+          updatedAt: comment.updated_at
+          ? new Date(comment.updated_at).toISOString()
+          : 'no updates',
+          creator:{ id:user!!.id, name: user!!.name},
+        };
+      }),
+    };
+
+    return formattedPost;
+  }
+  
+
   async fetch() {
     const users = this.userRepository.items
     const posts = await Promise.all(
       this.items.map(async (item) => {
-        const postsComments = this.commentsRepository.items.filter(
-          (comment) => comment.post_id === item.id,
-        )
+        
         const id = item.id
         const content = item.content
         const likes = item.likes ?? 0
@@ -74,27 +116,7 @@ export class InMemoryPostsRepository implements PostsRepository {
           id: item.creator_id,
           name: user.id,
         }
-        const comments = postsComments.map((comment) => {
-          const id = comment.id
-          const creatorId = comment.creator_id
-          const content = comment.content
-          const likes = comment.likes ?? 0
-          const dislikes = comment.dislikes ?? 0
-          const createdAt = new Date(comment.created_at).toISOString()
-          const updatedAt = comment.updated_at
-            ? new Date(comment.updated_at).toISOString()
-            : 'do updates'
-
-          return {
-            id,
-            creatorId,
-            content,
-            likes,
-            dislikes,
-            createdAt,
-            updatedAt,
-          }
-        })
+       
 
         return {
           id,
@@ -104,7 +126,7 @@ export class InMemoryPostsRepository implements PostsRepository {
           createdAt,
           updatedAt,
           creator,
-          comments,
+          
         }
       }),
     )

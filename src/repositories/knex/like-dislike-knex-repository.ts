@@ -1,9 +1,10 @@
 import {
   LikeDislike,
   LikeDislikeInput,
-  likeDislikePostIdCommentId,
-  likeDislikePostIdCommentIdUserId,
-  likeDislikeUpdate,
+  LikeDislikePostIdCommentId,
+  LikeDislikePostIdCommentIdUserId,
+  LikeDislikeUpdate,
+  
 } from '../../@types/types'
 import { Db } from '../../database/base-database'
 import {
@@ -53,7 +54,7 @@ export class KnexLikeDislikeRepository
   async findById({
     commentId,
     postId,
-  }: likeDislikePostIdCommentId): Promise<LikeDislike | undefined> {
+  }: LikeDislikePostIdCommentId): Promise<LikeDislike | undefined> {
     if (postId) {
       const post = await Db.connection('likes_dislikes')
         .where({ post_id: postId })
@@ -72,7 +73,7 @@ export class KnexLikeDislikeRepository
     userId,
     postId,
     commentId,
-  }: likeDislikePostIdCommentIdUserId) {
+  }: LikeDislikePostIdCommentIdUserId) {
     if (postId) {
       const post = await Db.connection('likes_dislikes')
         .where({
@@ -92,7 +93,7 @@ export class KnexLikeDislikeRepository
     return comment
   }
 
-  async delete({ commentId, postId, userId }: likeDislikePostIdCommentId) {
+  async delete({ commentId, postId, userId }: LikeDislikePostIdCommentId) {
     if (userId) {
       if (postId) {
         await Db.connection('likes_dislikes').del().where({
@@ -124,7 +125,7 @@ export class KnexLikeDislikeRepository
     postId,
     userId,
     likeOrDislike,
-  }: likeDislikeUpdate) {
+  }: LikeDislikeUpdate) {
     if (postId) {
       await Db.connection('likes_dislikes')
         .where({

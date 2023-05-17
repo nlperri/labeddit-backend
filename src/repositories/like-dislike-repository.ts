@@ -1,9 +1,10 @@
 import {
   LikeDislike,
   LikeDislikeInput,
-  likeDislikePostIdCommentId,
-  likeDislikePostIdCommentIdUserId,
-  likeDislikeUpdate,
+  LikeDislikePostIdCommentId,
+  LikeDislikePostIdCommentIdUserId,
+  LikeDislikeUpdate,
+  
 } from '../@types/types'
 
 export interface likeDislikeRepository {
@@ -12,21 +13,21 @@ export interface likeDislikeRepository {
     commentId,
     postId,
     userId,
-  }: likeDislikePostIdCommentIdUserId): Promise<LikeDislike | undefined>
+  }: LikeDislikePostIdCommentIdUserId): Promise<LikeDislike | undefined>
   findById({
     commentId,
     postId,
-  }: likeDislikePostIdCommentId): Promise<LikeDislike | undefined>
+  }: LikeDislikePostIdCommentId): Promise<LikeDislike | undefined>
   delete({
     commentId,
     postId,
     userId,
-  }: likeDislikePostIdCommentId): Promise<void>
+  }: LikeDislikePostIdCommentId): Promise<void>
   update({
     commentId,
     postId,
     userId,
     likeOrDislike,
-  }: likeDislikeUpdate): Promise<void>
+  }: LikeDislikeUpdate): Promise<void>
   isContentPost(contentId: string): Promise<boolean>
 }

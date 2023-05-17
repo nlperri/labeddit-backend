@@ -3,6 +3,7 @@ import {
   Post,
   PostCreateInput,
   PostEditInput,
+  getPost,
 } from '../@types/types'
 
 export interface PostsRepository {
@@ -13,4 +14,5 @@ export interface PostsRepository {
   delete(id: string): Promise<void>
   like(id: string, shouldDecrement?: boolean): Promise<void>
   dislike(id: string, shouldDecrement?: boolean): Promise<void>
+  getPost(id:string): Promise<getPost | null>
 }

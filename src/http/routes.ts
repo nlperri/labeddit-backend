@@ -14,6 +14,7 @@ const {
   updateComment,
   deleteComment,
   fetchComments,
+  getPost
 } = makeRoutes()
 const authenticationMiddleware = makeAuthenticationMiddleware()
 
@@ -125,5 +126,15 @@ export async function appRoutes() {
       })
       res.status(statusCode).json(payload)
     },
+  )
+  router.get(
+    '/posts/:id',
+    (req, res, next) => authenticationMiddleware.auth(req, res, next),
+    async (req,res)=>{
+      const {payload, statusCode} = await getPost.execute({
+        requestPostId: req.params.id
+      })
+      res.status(statusCode).json(payload)
+    }
   )
 }

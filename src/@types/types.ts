@@ -125,7 +125,7 @@ export type FetchCommentsOutput = {
   likes: number
   dislikes: number
   createdAt: string
-  updatedAt?: string
+  updatedAt: string | 'no updates'
   creator: {
     id: string
     name: string
@@ -174,21 +174,35 @@ export type CommentsPostsCreateInput = {
   post_id?: string
 }
 
-export type likeDislikePostIdCommentId = {
+export type LikeDislikePostIdCommentId = {
   commentId?: string
   postId?: string
   userId?: string
 }
 
-export type likeDislikePostIdCommentIdUserId = {
+export type LikeDislikePostIdCommentIdUserId = {
   commentId?: string
   postId?: string
   userId: string
 }
 
-export type likeDislikeUpdate = {
+export type LikeDislikeUpdate = {
   commentId?: string
   postId?: string
   userId: string
   likeOrDislike: number
+}
+
+export type GetPost = {
+  id: string;
+  content: string;
+  likes?: number;
+  dislikes?: number;
+  createdAt: string;
+  updatedAt: string | 'no updates'
+  creator: {
+    id: string;
+    name: string;
+  };
+  comments: FetchCommentsOutput[];
 }
