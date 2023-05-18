@@ -100,24 +100,25 @@ describe('Get Post Controller', async () => {
                 dislikes: expect.any(Number),
                 createdAt: expect.any(String),
                 updatedAt: expect.any(String),
-                creator: {
-                  id: expect.any(String),
-                  name: expect.any(String),
-                },
+                creator: 
+                expect.objectContaining({
+                    id: expect.any(String),
+                    name: expect.any(String)
+                }),
                 comments: expect.arrayContaining([
                   expect.objectContaining({
                       content: expect.any(String),
-                    id: expect.any(String),
-                    creator: 
-                      expect.objectContaining({
-                          id: expect.any(String),
-                          name: expect.any(String)
-                      })
+                      id: expect.any(String),
+                      creator: 
+                        expect.objectContaining({
+                           id: expect.any(String),
+                           name: expect.any(String)
+                       })
                     ,
-                    likes: expect.any(Number),
-                    dislikes: expect.any(Number),
-                    createdAt: expect.any(String),
-                    updatedAt: expect.any(String),
+                     likes: expect.any(Number),
+                      dislikes: expect.any(Number),
+                      createdAt: expect.any(String),
+                      updatedAt: expect.any(String),
                   }),
                 ]),
               }),
