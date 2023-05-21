@@ -37,9 +37,8 @@ export class LikeDislikeUseCase {
       throw new ResourceNotFoundError()
     }
 
-    const isContentPost = await this.likeDislikeRepository.isContentPost(
-      contentId,
-    )
+    const isContentPost = !!content.post_id
+    const isContentComment = !!content.comment_id
 
     if (isContentPost) {
       const post = await this.postsRepository.findById(contentId)
@@ -53,7 +52,7 @@ export class LikeDislikeUseCase {
       }
     }
 
-    if (!isContentPost) {
+    if (isContentComment) {
       const comment = await this.commentsRepository.findById(contentId)
 
       if (!comment) {

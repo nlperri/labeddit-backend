@@ -47,8 +47,7 @@ export class KnexPostsRepository extends Db implements PostsRepository {
     const commentsPostsTable = 'comments_posts'
     const postId = id
 
-
-    const formattedPost = await Db.connection(postsTable)
+    const results = await Db.connection('posts')
       .select(
         'posts.id as id',
         'posts.content',
@@ -57,52 +56,26 @@ export class KnexPostsRepository extends Db implements PostsRepository {
         'posts.created_at as createdAt',
         'posts.updated_at as updatedAt',
         Db.connection.raw(
-          'JSON_OBJECT("userId", users.id, "userName", users.name) as creator',
+          'JSON_OBJECT("userId", posts.creator_id, "userName", name) as creator',
         ),
-        'comments.id as commentId',
-        'comments.content as commentContent',
-        'comments.likes as commentLikes',
-        'comments.dislikes as commentDislikes',
-        'comments.created_at as commentCreatedAt',
-        'comments.updated_at as commentUpdatedAt',
-        Db.connection.raw(
-          'JSON_OBJECT("commentUserId", u2.id, "commentUserName", u2.name) as commentCreator',
-        )
       )
-      .leftJoin(commentsPostsTable, 'posts.id', '=', 'comments_posts.post_id')
-      .innerJoin(commentsTable, 'posts.id', '=', 'comments.post_id')
-      .innerJoin(usersTable, 'users.id', '=', 'posts.creator_id')
-      .innerJoin({ u2: usersTable }, 'u2.id', '=', 'comments.creator_id')
+      .innerJoin('users', 'users.id', '=', 'posts.creator_id')
+      .groupBy('posts.created_at')
       .where('posts.id', postId)
 
+    const formattedPost = results.map((result) => {
+      const id = result.id
+      const content = result.content
+      const likes = result.likes ?? 0
+      const dislikes = result.dislikes ?? 0
+      const createdAt = result.createdAt
+      const updatedAt = result.commentUpdatedAt
+        ? result.commentUpdatedAt
+        : 'no updates'
+      const creator = JSON.parse(result.creator)
 
-      const postIdResult = formattedPost[0].id
-      const content = formattedPost[0].content.lenght > 115 ? formattedPost[0].content.substring(0, 115).concat('...') : formattedPost[0].content
-      const likes = formattedPost[0].likes ?? 0
-      const dislikes = formattedPost[0].dislikes ?? 0
-      const createdAt = formattedPost[0].createdAt
-      const updatedAt = formattedPost[0].updatedAt ? formattedPost[0].updatedAt : 'no updates'
-      const creator = JSON.parse(formattedPost[0].creator)
-
-
-
-      const comments = formattedPost.map((result) => {
-        const commentCreator = JSON.parse(result.commentCreator);
-        const commentCreatorObject = { id: commentCreator.commentUserId, name: commentCreator.commentUserName };
-      
-        return {
-          id: result.commentId,
-          content: result.commentContent,
-          likes: result.commentLikes ?? 0,
-          dislikes: result.commentDislikes ?? 0,
-          createdAt: result.commentCreatedAt,
-          updatedAt: result.commentUpdatedAt ? result.commentUpdatedAt : 'no updates',
-          creator: commentCreatorObject,
-        };
-      });
-
-      const formattedResult = {
-        id: postIdResult,
+      return {
+        id,
         content,
         likes,
         dislikes,
@@ -112,10 +85,68 @@ export class KnexPostsRepository extends Db implements PostsRepository {
           id: creator.userId,
           name: creator.userName,
         },
-        comments
+      }
+    })
+
+    const postIdResult = formattedPost[0].id
+    const content = formattedPost[0].content
+    const likes = formattedPost[0].likes ?? 0
+    const dislikes = formattedPost[0].dislikes ?? 0
+    const createdAt = formattedPost[0].createdAt
+    const updatedAt = formattedPost[0].updatedAt
+      ? formattedPost[0].updatedAt
+      : 'no updates'
+
+    const creator = formattedPost[0].creator
+
+    const comments = await Db.connection(commentsTable)
+      .select(
+        'comments.id as id',
+        'comments.post_id as postId',
+        'comments.content',
+        'comments.likes',
+        'comments.dislikes',
+        'comments.created_at as createdAt',
+        'comments.updated_at as updatedAt',
+        Db.connection.raw(
+          'JSON_OBJECT("userId", comments.creator_id, "userName", name) as creator',
+        ),
+      )
+      .innerJoin(usersTable, 'users.id', '=', 'comments.creator_id')
+      .where('comments.post_id', postId)
+
+    const formattedComments = comments.map((result) => {
+      const commentCreator = JSON.parse(result.creator)
+      const commentCreatorObject = {
+        id: commentCreator.userId,
+        name: commentCreator.userName,
       }
 
-    
+      return {
+        id: result.id,
+        content: result.content,
+        likes: result.likes ?? 0,
+        dislikes: result.dislikes ?? 0,
+        createdAt: result.createdAt,
+        updatedAt: result.updatedAt ? result.updatedAt : 'no updates',
+        creator: commentCreatorObject,
+      }
+    })
+
+    const formattedResult = {
+      id: postIdResult,
+      content,
+      likes,
+      dislikes,
+      createdAt,
+      updatedAt,
+      creator: {
+        id: creator.id,
+        name: creator.name,
+      },
+      comments: formattedComments,
+    }
+
     return formattedResult
   }
 
@@ -137,11 +168,16 @@ export class KnexPostsRepository extends Db implements PostsRepository {
 
     const formattedResult = results.map((result) => {
       const id = result.id
-      const content = result.content.substring(0,115).concat('...')
-      const likes = result.likes ? result.likes : undefined
-      const dislikes = result.dislikes ? result.dislikes : undefined
+      const content =
+        result.content.length > 200
+          ? result.content.substring(0, 200).concat('...')
+          : result.content
+      const likes = result.likes ?? 0
+      const dislikes = result.dislikes ?? 0
       const createdAt = result.createdAt
-      const updatedAt = result.updatedAt ? result.updatedAt : undefined
+      const updatedAt = result.commentUpdatedAt
+        ? result.commentUpdatedAt
+        : 'no updates'
       const creator = JSON.parse(result.creator)
 
       return {

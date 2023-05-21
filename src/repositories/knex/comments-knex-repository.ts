@@ -17,6 +17,7 @@ export class KnexCommentsRepository extends Db implements CommentsRepository {
       comment_id: comment.id,
     })
 
+    console.log(comment, commentInCommentsPosts)
     await Db.connection('comments').insert(comment)
     await Db.connection('comments_posts').insert(commentInCommentsPosts)
 

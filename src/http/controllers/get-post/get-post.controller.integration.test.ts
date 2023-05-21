@@ -60,7 +60,7 @@ describe('Get Post Controller', async () => {
 
   it('should return 401 not authorized when no token is provided', async () => {
     await server
-      .get('/posts')
+      .get('/posts/:id')
       .expect(401)
       .then((response) => {
         expect(response.body).toBe('Not authorizated')
@@ -76,16 +76,16 @@ describe('Get Post Controller', async () => {
 
     authToken = await getToken(user.email, user.password)
 
-  const post =  await postsRepository.create({
+    const post = await postsRepository.create({
       content: 'some-content',
       creator_id: userWithPost.id,
     })
 
     await commentsRepository.create({
-        content: 'some comment',
-        creator_id: userWithPost.id,
-        post_id: post.id,
-      })
+      content: 'some comment',
+      creator_id: userWithPost.id,
+      post_id: post.id,
+    })
 
     await server
       .get(`/posts/${post.id}`)
@@ -93,35 +93,32 @@ describe('Get Post Controller', async () => {
       .expect(200)
       .then((response) => {
         expect(response.body).toEqual(
-            expect.objectContaining({
-                id: expect.any(String),
+          expect.objectContaining({
+            id: expect.any(String),
+            content: expect.any(String),
+            likes: expect.any(Number),
+            dislikes: expect.any(Number),
+            createdAt: expect.any(String),
+            updatedAt: expect.any(String),
+            creator: expect.objectContaining({
+              id: expect.any(String),
+              name: expect.any(String),
+            }),
+            comments: expect.arrayContaining([
+              expect.objectContaining({
                 content: expect.any(String),
+                id: expect.any(String),
+                creator: expect.objectContaining({
+                  id: expect.any(String),
+                  name: expect.any(String),
+                }),
                 likes: expect.any(Number),
                 dislikes: expect.any(Number),
                 createdAt: expect.any(String),
                 updatedAt: expect.any(String),
-                creator: 
-                expect.objectContaining({
-                    id: expect.any(String),
-                    name: expect.any(String)
-                }),
-                comments: expect.arrayContaining([
-                  expect.objectContaining({
-                      content: expect.any(String),
-                      id: expect.any(String),
-                      creator: 
-                        expect.objectContaining({
-                           id: expect.any(String),
-                           name: expect.any(String)
-                       })
-                    ,
-                     likes: expect.any(Number),
-                      dislikes: expect.any(Number),
-                      createdAt: expect.any(String),
-                      updatedAt: expect.any(String),
-                  }),
-                ]),
               }),
+            ]),
+          }),
         )
       })
   })

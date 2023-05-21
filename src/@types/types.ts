@@ -7,6 +7,12 @@ export type User = {
   role: USER_ROLES
 }
 
+export type UserOutput = {
+  id: string
+  name: string
+  email: string
+}
+
 export enum USER_ROLES {
   NORMAL = 'NORMAL',
   ADMIN = 'ADMIN',
@@ -194,15 +200,15 @@ export type LikeDislikeUpdate = {
 }
 
 export type GetPost = {
-  id: string;
-  content: string;
-  likes?: number;
-  dislikes?: number;
-  createdAt: string;
+  id: string
+  content: string
+  likes?: number
+  dislikes?: number
+  createdAt: string
   updatedAt: string | 'no updates'
   creator: {
-    id: string;
-    name: string;
-  };
-  comments: FetchCommentsOutput[];
+    id: string
+    name: string
+  }
+  comments: FetchCommentsOutput[]
 }

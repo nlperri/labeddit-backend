@@ -5,7 +5,6 @@ import { execSync } from 'child_process'
 import { Db } from '../../../database/base-database'
 import { hash } from 'bcryptjs'
 import { KnexUsersRepository } from '../../../repositories/knex/users-knex-repository'
-import { KnexPostsRepository } from '../../../repositories/knex/posts-knex-repository'
 
 class FakeDb extends Db {
   constructor() {
@@ -19,10 +18,10 @@ class FakeDb extends Db {
   }
 }
 
-describe('Fetch Posts Controller', async () => {
+describe('Get User Controller', async () => {
   let server: supertest.SuperTest<supertest.Test>
   const usersRepository = new KnexUsersRepository()
-  const postsRepository = new KnexPostsRepository()
+
   let authToken
 
   const user = {
@@ -58,15 +57,15 @@ describe('Fetch Posts Controller', async () => {
 
   it('should return 401 not authorized when no token is provided', async () => {
     await server
-      .get('/posts')
+      .get('/users/:id')
       .expect(401)
       .then((response) => {
         expect(response.body).toBe('Not authorizated')
       })
   })
 
-  it.only('should receive fetched posts', async () => {
-    const userWithPost = await usersRepository.create({
+  it('should receive user', async () => {
+    const createdUser = await usersRepository.create({
       name: user.name,
       email: user.email,
       password_hash: await hash(user.password, 6),
@@ -74,29 +73,17 @@ describe('Fetch Posts Controller', async () => {
 
     authToken = await getToken(user.email, user.password)
 
-    await postsRepository.create({
-      content: 'some-content',
-      creator_id: userWithPost.id,
-    })
-
     await server
-      .get('/posts')
+      .get(`/users/${createdUser.id}`)
       .set('Authorization', `Bearer ${authToken}`)
       .expect(200)
       .then((response) => {
-        console.log(response.body)
         expect(response.body).toEqual(
-          expect.arrayContaining([
-            expect.objectContaining({
-              id: expect.any(String),
-              content: expect.any(String),
-              createdAt: expect.any(String),
-              creator: {
-                id: expect.any(String),
-                name: expect.any(String),
-              },
-            }),
-          ]),
+          expect.objectContaining({
+            id: createdUser.id,
+            name: createdUser.name,
+            email: createdUser.email,
+          }),
         )
       })
   })

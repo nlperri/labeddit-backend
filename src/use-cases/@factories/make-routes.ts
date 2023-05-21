@@ -23,6 +23,8 @@ import { makeFetchCommentsUseCase } from './make-fetch-comments-use-case'
 import { FetchCommentsController } from '../../http/controllers/fetch-comments/fetch-comments.controller'
 import { makeGetPostUseCase } from './make-get-post-use-case'
 import { GetPostController } from '../../http/controllers/get-post/get-post.controller'
+import { makeGetUserUseCase } from './make-get-user-use-case'
+import { GetUserController } from '../../http/controllers/get-user/get-user.controller'
 
 export function makeRoutes() {
   const tokenManager = new TokenManager()
@@ -42,8 +44,9 @@ export function makeRoutes() {
   const deleteCommentUseCase = makeDeleteCommentUseCase()
   const fetchCommentsUseCase = makeFetchCommentsUseCase()
   const getPostUseCase = makeGetPostUseCase()
+  const getUserUseCase = makeGetUserUseCase()
 
-  const register = new RegisterController(registerUseCase,tokenManager)
+  const register = new RegisterController(registerUseCase, tokenManager)
   const createPost = new CreatePostController(createPostUseCase)
   const fetchPosts = new FetchPostsController(fetchPostsUseCase)
   const updatePosts = new UpdatePostController(updatePostUseCase)
@@ -54,6 +57,7 @@ export function makeRoutes() {
   const deleteComment = new DeleteCommentController(deleteCommentUseCase)
   const fetchComments = new FetchCommentsController(fetchCommentsUseCase)
   const getPost = new GetPostController(getPostUseCase)
+  const getUser = new GetUserController(getUserUseCase)
 
   return {
     authenticate,
@@ -67,6 +71,7 @@ export function makeRoutes() {
     updateComment,
     deleteComment,
     fetchComments,
-    getPost
+    getPost,
+    getUser,
   }
 }
