@@ -12,14 +12,7 @@ Criação de API com funcionadades CRUD integradas a criação de usuário (com 
 
 ### Documentação da API
 
-```ubuntu
-$ npm install
-
-$ npm run swagger
-
-$ npm run dev || $ npm run start
-
-```
+https://documenter.getpostman.com/view/25826606/2s93m344F2
 
 ### RFs (Requisitos funcionais)
 
