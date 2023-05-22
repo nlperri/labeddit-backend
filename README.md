@@ -10,6 +10,10 @@ Criação de API com funcionadades CRUD integradas a criação de usuário (com 
 
 ...
 
+### Repositório Front-end:
+
+https://github.com/nlperri/labeddit-web/
+
 ### Documentação da API
 
 https://documenter.getpostman.com/view/25826606/2s93m344F2
