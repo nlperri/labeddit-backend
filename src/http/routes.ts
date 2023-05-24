@@ -41,12 +41,10 @@ export async function appRoutes() {
     },
   )
   router.get(
-    '/posts/page/:page',
+    '/posts',
     (req, res, next) => authenticationMiddleware.auth(req, res, next),
-    async (req, res) => {
-      const { payload, statusCode } = await fetchPosts.execute({
-        requestPage: req.params.page,
-      })
+    async (_, res) => {
+      const { payload, statusCode } = await fetchPosts.execute()
       res.status(statusCode).json(payload)
     },
   )
@@ -124,9 +122,7 @@ export async function appRoutes() {
     '/posts/:id/comments',
     (req, res, next) => authenticationMiddleware.auth(req, res, next),
     async (req, res) => {
-      const { payload, statusCode } = await fetchComments.execute({
-        requestPostId: req.params.id,
-      })
+      const { payload, statusCode } = await fetchComments.execute(req.params.id)
       res.status(statusCode).json(payload)
     },
   )
@@ -134,9 +130,7 @@ export async function appRoutes() {
     '/posts/:id',
     (req, res, next) => authenticationMiddleware.auth(req, res, next),
     async (req, res) => {
-      const { payload, statusCode } = await getPost.execute({
-        requestPostId: req.params.id,
-      })
+      const { payload, statusCode } = await getPost.execute(req.params.id)
       res.status(statusCode).json(payload)
     },
   )
@@ -144,9 +138,7 @@ export async function appRoutes() {
     '/users/:id',
     (req, res, next) => authenticationMiddleware.auth(req, res, next),
     async (req, res) => {
-      const { payload, statusCode } = await getUser.execute({
-        requestUserId: req.params.id,
-      })
+      const { payload, statusCode } = await getUser.execute(req.params.id)
       res.status(statusCode).json(payload)
     },
   )

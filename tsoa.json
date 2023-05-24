@@ -4,7 +4,7 @@
   "controllerPathGlobs": ["src/**/*.controller.ts"],
   "spec": {
     "outputDirectory": "docs",
-    "host": "localhost:3003",
+    "host": "localhost:3009",
     "basePath": "/v1",
     "specVersion": 3
   },

@@ -1,12 +1,8 @@
-import { Route, Get, SuccessResponse, Body } from 'tsoa'
+import { Route, Get, SuccessResponse, Body, Path } from 'tsoa'
 import { HttpResponse } from '../../response/response'
 import { UserOutput } from '../../../@types/types'
 import { z } from 'zod'
 import { GetUserUseCase } from '../../../use-cases/get-user/get-user'
-
-interface GetUserRequest {
-  requestUserId: string
-}
 
 @Route('users')
 export class GetUserController {
@@ -14,15 +10,15 @@ export class GetUserController {
   @SuccessResponse('200', 'Success')
   @Get(':id')
   async execute(
-    @Body()
-    { requestUserId }: GetUserRequest,
+    @Path()
+    id: string,
   ): Promise<HttpResponse<UserOutput>> {
     const getUserInputSchema = z.object({
       userId: z.string(),
     })
 
     const { userId } = getUserInputSchema.parse({
-      userId: requestUserId,
+      userId: id,
     })
 
     const { user } = await this.GetUserUseCase.execute({ userId })

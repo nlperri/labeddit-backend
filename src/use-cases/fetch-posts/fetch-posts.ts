@@ -1,10 +1,6 @@
 import { FetchPostsOutput } from '../../@types/types'
 import { PostsRepository } from '../../repositories/posts-repository'
 
-interface FetchPostsUseCaseRequest {
-  page: number
-}
-
 interface FetchPostsUseCaseResponse {
   posts: FetchPostsOutput[]
 }
@@ -12,10 +8,8 @@ interface FetchPostsUseCaseResponse {
 export class FetchPostsUseCase {
   constructor(private postsRepository: PostsRepository) {}
 
-  async execute({
-    page,
-  }: FetchPostsUseCaseRequest): Promise<FetchPostsUseCaseResponse> {
-    const posts = await this.postsRepository.fetch(page)
+  async execute(): Promise<FetchPostsUseCaseResponse> {
+    const posts = await this.postsRepository.fetch()
 
     return {
       posts,

@@ -13,7 +13,13 @@ import { DeleteCommentController } from './../src/http/controllers/delete-commen
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { DeletePostController } from './../src/http/controllers/delete-post/delete-post.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { FetchCommentsController } from './../src/http/controllers/fetch-comments/fetch-comments.controller';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { FetchPostsController } from './../src/http/controllers/fetch-posts/fetch-posts.controller';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { GetPostController } from './../src/http/controllers/get-post/get-post.controller';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { GetUserController } from './../src/http/controllers/get-user/get-user.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { LikeDislikeController } from './../src/http/controllers/like-dislike-post/like-dislike.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -125,14 +131,23 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "CommentOutput": {
+    "FetchCommentsOutput": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"updatedAt":{"dataType":"string","required":true},"createdAt":{"dataType":"string","required":true},"dislikes":{"dataType":"double","required":true},"likes":{"dataType":"double","required":true},"content":{"dataType":"string","required":true},"creatorId":{"dataType":"string","required":true},"id":{"dataType":"string","required":true}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"creator":{"dataType":"nestedObjectLiteral","nestedProperties":{"name":{"dataType":"string","required":true},"id":{"dataType":"string","required":true}},"required":true},"updatedAt":{"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":["no updates"]}],"required":true},"createdAt":{"dataType":"string","required":true},"dislikes":{"dataType":"double","required":true},"likes":{"dataType":"double","required":true},"content":{"dataType":"string","required":true},"id":{"dataType":"string","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "HttpResponse_FetchCommentsOutput-Array_": {
+        "dataType": "refObject",
+        "properties": {
+            "payload": {"dataType":"array","array":{"dataType":"refAlias","ref":"FetchCommentsOutput"},"required":true},
+            "statusCode": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "FetchPostsOutput": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"comments":{"dataType":"array","array":{"dataType":"refAlias","ref":"CommentOutput"},"required":true},"creator":{"dataType":"nestedObjectLiteral","nestedProperties":{"name":{"dataType":"string","required":true},"id":{"dataType":"string","required":true}},"required":true},"updatedAt":{"dataType":"string"},"createdAt":{"dataType":"string","required":true},"dislikes":{"dataType":"double","required":true},"likes":{"dataType":"double","required":true},"content":{"dataType":"string","required":true},"id":{"dataType":"string","required":true}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"creator":{"dataType":"nestedObjectLiteral","nestedProperties":{"name":{"dataType":"string","required":true},"id":{"dataType":"string","required":true}},"required":true},"updatedAt":{"dataType":"string"},"createdAt":{"dataType":"string","required":true},"dislikes":{"dataType":"double","required":true},"likes":{"dataType":"double","required":true},"content":{"dataType":"string","required":true},"id":{"dataType":"string","required":true}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "HttpResponse_FetchPostsOutput-Array_": {
@@ -144,31 +159,40 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "GetPost": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"comments":{"dataType":"array","array":{"dataType":"refAlias","ref":"FetchCommentsOutput"},"required":true},"creator":{"dataType":"nestedObjectLiteral","nestedProperties":{"name":{"dataType":"string","required":true},"id":{"dataType":"string","required":true}},"required":true},"updatedAt":{"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":["no updates"]}],"required":true},"createdAt":{"dataType":"string","required":true},"dislikes":{"dataType":"double"},"likes":{"dataType":"double"},"content":{"dataType":"string","required":true},"id":{"dataType":"string","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "HttpResponse_GetPost_": {
+        "dataType": "refObject",
+        "properties": {
+            "payload": {"ref":"GetPost","required":true},
+            "statusCode": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UserOutput": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"email":{"dataType":"string","required":true},"name":{"dataType":"string","required":true},"id":{"dataType":"string","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "HttpResponse_UserOutput_": {
+        "dataType": "refObject",
+        "properties": {
+            "payload": {"ref":"UserOutput","required":true},
+            "statusCode": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "LikeDislikeRequest": {
         "dataType": "refObject",
         "properties": {
             "requestLike": {"dataType":"boolean","required":true},
             "requestContentId": {"dataType":"string","required":true},
             "requestUser": {"ref":"TokenPayload","required":true},
-        },
-        "additionalProperties": false,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "Pick_User.Exclude_keyofUser.password__": {
-        "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"id":{"dataType":"string","required":true},"name":{"dataType":"string","required":true},"email":{"dataType":"string","required":true},"created_at":{"dataType":"union","subSchemas":[{"dataType":"datetime"},{"dataType":"string"}],"required":true},"role":{"ref":"USER_ROLES","required":true}},"validators":{}},
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "Omit_User.password_": {
-        "dataType": "refAlias",
-        "type": {"ref":"Pick_User.Exclude_keyofUser.password__","validators":{}},
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "HttpResponse_Omit_User.password__": {
-        "dataType": "refObject",
-        "properties": {
-            "payload": {"ref":"Omit_User.password_","required":true},
-            "statusCode": {"dataType":"double","required":true},
         },
         "additionalProperties": false,
     },
@@ -366,7 +390,32 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.get('/v1/posts',
+        app.get('/v1/posts/:id/comments',
+            ...(fetchMiddlewares<RequestHandler>(FetchCommentsController)),
+            ...(fetchMiddlewares<RequestHandler>(FetchCommentsController.prototype.execute)),
+
+            function FetchCommentsController_execute(request: any, response: any, next: any) {
+            const args = {
+                    id: {"in":"path","name":"id","required":true,"dataType":"string"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new FetchCommentsController();
+
+
+              const promise = controller.execute.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, 200, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/v1/posts/page/:page',
             ...(fetchMiddlewares<RequestHandler>(FetchPostsController)),
             ...(fetchMiddlewares<RequestHandler>(FetchPostsController.prototype.execute)),
 
@@ -381,6 +430,56 @@ export function RegisterRoutes(app: Router) {
                 validatedArgs = getValidatedArgs(args, request, response);
 
                 const controller = new FetchPostsController();
+
+
+              const promise = controller.execute.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, 200, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/v1/posts/:id',
+            ...(fetchMiddlewares<RequestHandler>(GetPostController)),
+            ...(fetchMiddlewares<RequestHandler>(GetPostController.prototype.execute)),
+
+            function GetPostController_execute(request: any, response: any, next: any) {
+            const args = {
+                    id: {"in":"path","name":"id","required":true,"dataType":"string"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new GetPostController();
+
+
+              const promise = controller.execute.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, 200, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/v1/users/:id',
+            ...(fetchMiddlewares<RequestHandler>(GetUserController)),
+            ...(fetchMiddlewares<RequestHandler>(GetUserController.prototype.execute)),
+
+            function GetUserController_execute(request: any, response: any, next: any) {
+            const args = {
+                    id: {"in":"path","name":"id","required":true,"dataType":"string"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new GetUserController();
 
 
               const promise = controller.execute.apply(controller, validatedArgs as any);

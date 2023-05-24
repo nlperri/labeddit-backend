@@ -49,7 +49,7 @@ describe('Fetch Posts Use Case', () => {
       creator_id: user.id,
     })
 
-    const { posts } = await sut.execute({ page: 1 })
+    const { posts } = await sut.execute()
 
     expect(posts).toHaveLength(2)
     expect(posts).toEqual(

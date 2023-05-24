@@ -58,7 +58,7 @@ describe('Fetch Posts Controller', async () => {
 
   it('should return 401 not authorized when no token is provided', async () => {
     await server
-      .get('/posts/page/1')
+      .get('/posts')
       .expect(401)
       .then((response) => {
         expect(response.body).toBe('Not authorizated')
@@ -80,16 +80,17 @@ describe('Fetch Posts Controller', async () => {
     })
 
     await server
-      .get('/posts/page/1')
+      .get('/posts')
       .set('Authorization', `Bearer ${authToken}`)
       .expect(200)
       .then((response) => {
-        console.log(response.body)
         expect(response.body).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
               id: expect.any(String),
               content: expect.any(String),
+              likes: expect.any(Number),
+              dislikes: expect.any(Number),
               createdAt: expect.any(String),
               creator: {
                 id: expect.any(String),

@@ -60,7 +60,6 @@ export class KnexPostsRepository extends Db implements PostsRepository {
         ),
       )
       .innerJoin('users', 'users.id', '=', 'posts.creator_id')
-      .groupBy('posts.created_at')
       .where('posts.id', postId)
 
     const formattedPost = results.map((result) => {
@@ -150,7 +149,7 @@ export class KnexPostsRepository extends Db implements PostsRepository {
     return formattedResult
   }
 
-  async fetch(page: number) {
+  async fetch() {
     const results = await Db.connection('posts')
       .select(
         'posts.id as id',
@@ -164,9 +163,6 @@ export class KnexPostsRepository extends Db implements PostsRepository {
         ),
       )
       .innerJoin('users', 'users.id', '=', 'posts.creator_id')
-      .groupBy('posts.created_at')
-      .limit(10)
-      .offset(page * 10)
 
     const formattedResult = results.map((result) => {
       const id = result.id
