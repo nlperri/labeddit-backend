@@ -8,7 +8,7 @@ Criação de API com funcionadades CRUD integradas a criação de usuário (com 
 
 ### Deploy:
 
-...
+https://labeddit-r48n.onrender.com
 
 ### Repositório Front-end:
 
