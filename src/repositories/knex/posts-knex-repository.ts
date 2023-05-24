@@ -113,6 +113,7 @@ export class KnexPostsRepository extends Db implements PostsRepository {
       )
       .innerJoin(usersTable, 'users.id', '=', 'comments.creator_id')
       .where('comments.post_id', postId)
+      .orderBy('createdAt', 'desc')
 
     const formattedComments = comments.map((result) => {
       const commentCreator = JSON.parse(result.creator)
@@ -162,6 +163,7 @@ export class KnexPostsRepository extends Db implements PostsRepository {
           'JSON_OBJECT("userId", posts.creator_id, "userName", name) as creator',
         ),
       )
+      .orderBy('createdAt', 'desc')
       .innerJoin('users', 'users.id', '=', 'posts.creator_id')
 
     const formattedResult = results.map((result) => {
