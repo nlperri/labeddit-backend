@@ -41,10 +41,12 @@ export async function appRoutes() {
     },
   )
   router.get(
-    '/posts',
+    '/posts/page/:page',
     (req, res, next) => authenticationMiddleware.auth(req, res, next),
-    async (_, res) => {
-      const { payload, statusCode } = await fetchPosts.execute()
+    async (req, res) => {
+      const { payload, statusCode } = await fetchPosts.execute({
+        requestPage: req.params.page,
+      })
       res.status(statusCode).json(payload)
     },
   )

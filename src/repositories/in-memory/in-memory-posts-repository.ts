@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto'
-import { Post, PostCreateInput, PostEditInput, User, getPost } from '../../@types/types'
+import { Post, PostCreateInput, PostEditInput } from '../../@types/types'
 import { PostsRepository } from '../posts-repository'
 import { InMemoryUsersRepository } from './in-memory-users-repository'
 import { InMemoryCommentsPostsRepository } from './in-memory-comments-posts-repository'
@@ -52,18 +52,21 @@ export class InMemoryPostsRepository implements PostsRepository {
   }
 
   async getPost(id: string) {
-    const post = this.items.find((item) => item.id === id);
+    const post = this.items.find((item) => item.id === id)
     if (!post) {
-      return null;
+      return null
     }
-    const user = this.userRepository.items.find(item=>item.id === post.creator_id)
+    const user = this.userRepository.items.find(
+      (item) => item.id === post.creator_id,
+    )
 
-    if(!user){
+    if (!user) {
       return null
     }
 
-
-    const comments =  this.commentsRepository.items.filter((item) => item.post_id === id);
+    const comments = this.commentsRepository.items.filter(
+      (item) => item.post_id === id,
+    )
 
     const formattedPost = {
       id: post.id,
@@ -72,11 +75,13 @@ export class InMemoryPostsRepository implements PostsRepository {
       dislikes: post.dislikes ?? 0,
       createdAt: new Date(post.created_at).toISOString(),
       updatedAt: post.updated_at
-      ? new Date(post.updated_at).toISOString()
-      : 'no updates',
-      creator: {id: user.id, name: user.name},
+        ? new Date(post.updated_at).toISOString()
+        : 'no updates',
+      creator: { id: user.id, name: user.name },
       comments: comments.map((comment) => {
-        const user = this.userRepository.items.find(item=>item.id === comment.creator_id)
+        const user = this.userRepository.items.find(
+          (item) => item.id === comment.creator_id,
+        )
         return {
           id: comment.id,
           content: comment.content,
@@ -84,22 +89,20 @@ export class InMemoryPostsRepository implements PostsRepository {
           dislikes: comment.dislikes ?? 0,
           createdAt: new Date(comment.created_at).toISOString(),
           updatedAt: comment.updated_at
-          ? new Date(comment.updated_at).toISOString()
-          : 'no updates',
-          creator:{ id:user!!.id, name: user!!.name},
-        };
+            ? new Date(comment.updated_at).toISOString()
+            : 'no updates',
+          creator: { id: user!!.id, name: user!!.name },
+        }
       }),
-    };
+    }
 
-    return formattedPost;
+    return formattedPost
   }
-  
 
   async fetch() {
     const users = this.userRepository.items
     const posts = await Promise.all(
       this.items.map(async (item) => {
-        
         const id = item.id
         const content = item.content
         const likes = item.likes ?? 0
@@ -116,7 +119,6 @@ export class InMemoryPostsRepository implements PostsRepository {
           id: item.creator_id,
           name: user.id,
         }
-       
 
         return {
           id,
@@ -126,7 +128,6 @@ export class InMemoryPostsRepository implements PostsRepository {
           createdAt,
           updatedAt,
           creator,
-          
         }
       }),
     )

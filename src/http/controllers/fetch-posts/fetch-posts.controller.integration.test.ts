@@ -58,14 +58,14 @@ describe('Fetch Posts Controller', async () => {
 
   it('should return 401 not authorized when no token is provided', async () => {
     await server
-      .get('/posts')
+      .get('/posts/page/1')
       .expect(401)
       .then((response) => {
         expect(response.body).toBe('Not authorizated')
       })
   })
 
-  it.only('should receive fetched posts', async () => {
+  it('should receive fetched posts', async () => {
     const userWithPost = await usersRepository.create({
       name: user.name,
       email: user.email,
@@ -80,7 +80,7 @@ describe('Fetch Posts Controller', async () => {
     })
 
     await server
-      .get('/posts')
+      .get('/posts/page/1')
       .set('Authorization', `Bearer ${authToken}`)
       .expect(200)
       .then((response) => {
