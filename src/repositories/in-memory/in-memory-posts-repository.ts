@@ -11,6 +11,9 @@ export class InMemoryPostsRepository implements PostsRepository {
     private readonly commentsPostsRepository: InMemoryCommentsPostsRepository,
     private readonly commentsRepository: InMemoryCommentsRepository,
   ) {}
+  fetchPostsWithComments(): Promise<any> {
+    throw new Error('Method not implemented.')
+  }
   public items: Post[] = []
 
   async create({ content, creator_id }: PostCreateInput) {

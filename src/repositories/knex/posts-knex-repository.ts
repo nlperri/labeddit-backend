@@ -1,4 +1,10 @@
-import { Post, PostCreateInput, PostEditInput } from '../../@types/types'
+import {
+  Comment,
+  FetchPostsWithCommentsOutput,
+  Post,
+  PostCreateInput,
+  PostEditInput,
+} from '../../@types/types'
 import { Db } from '../../database/base-database'
 import { PostsRepository } from '../posts-repository'
 import { CreatePostDTO } from '../../dtos/create-post.dto'
@@ -40,11 +46,141 @@ export class KnexPostsRepository extends Db implements PostsRepository {
     return postToUpdate
   }
 
+  async fetchPostsWithComments() {
+    const posts = await Db.connection('posts')
+      .select(
+        'posts.id as id',
+        'posts.content',
+        'posts.likes',
+        'posts.dislikes',
+        'posts.created_at as createdAt',
+        'posts.updated_at as updatedAt',
+        Db.connection.raw(
+          'JSON_OBJECT("userId", posts.creator_id, "userName", name) as creator',
+        ),
+      )
+      .innerJoin('users', 'users.id', '=', 'posts.creator_id')
+
+    const comments = await Db.connection('comments')
+      .select(
+        'comments.id as id',
+        'comments.post_id as postId',
+        'comments.content',
+        'comments.likes',
+        'comments.dislikes',
+        'comments.created_at as createdAt',
+        'comments.updated_at as updatedAt',
+        Db.connection.raw(
+          'JSON_OBJECT("userId", comments.creator_id, "userName", name) as creator',
+        ),
+      )
+      .innerJoin('users', 'users.id', '=', 'comments.creator_id')
+
+    const likesPosts = await Db.connection('likes_dislikes')
+      .select(
+        'likes_dislikes.user_id as userId',
+        'likes_dislikes.post_id as postId',
+        'users.name as userName',
+        'likes_dislikes.like as like',
+      )
+      .innerJoin('users', 'users.id', '=', 'likes_dislikes.user_id')
+
+    const likesComments = await Db.connection('likes_dislikes')
+      .select(
+        'likes_dislikes.user_id as userId',
+        'likes_dislikes.comment_id as commentId',
+        'users.name as userName',
+        'likes_dislikes.like as like',
+      )
+      .innerJoin('users', 'users.id', '=', 'likes_dislikes.user_id')
+
+    const formattedPosts = posts.map((post) => {
+      const commentsPost = comments.filter(
+        (comment) => comment.postId === post.id,
+      )
+
+      const likesInPost = likesPosts.filter((like) => {
+        return like.like === 1 && like.postId === post.id
+      })
+
+      const dislikesInPost = likesPosts.filter((like) => {
+        return like.like === 2 && like.postId === post.id
+      })
+
+      const creator = JSON.parse(post.creator)
+
+      return {
+        id: post.id,
+        content: post.content,
+        likes: likesInPost.map((like) => {
+          return {
+            userName: like.userName,
+            userId: like.userId,
+            like: like.like,
+            postId: like.postId,
+          }
+        }),
+        dislikes: dislikesInPost.map((dislike) => {
+          return {
+            userName: dislike.userName,
+            userId: dislike.userId,
+            like: dislike.like,
+            postId: dislike.postId,
+          }
+        }),
+        createdAt: post.createdAt,
+        updatedAt: post.updatedAt,
+        creator: {
+          id: creator.userId,
+          name: creator.userName,
+        },
+        comments: commentsPost.map((comment) => {
+          const likesInComments = likesComments.filter((like) => {
+            return like.like === 1 && like.commentId === comment.id
+          })
+
+          const dislikesInComments = likesComments.filter((like) => {
+            return like.like === 2 && like.commentId === comment.id
+          })
+
+          const creator = JSON.parse(comment.creator)
+
+          return {
+            id: comment.id,
+            content: comment.content,
+            likes: likesInComments.map((like) => {
+              return {
+                userName: like.userName,
+                userId: like.userId,
+                like: like.like,
+                postId: like.commentId,
+              }
+            }),
+            dislikes: dislikesInComments.map((dislike) => {
+              return {
+                userName: dislike.userName,
+                userId: dislike.userId,
+                like: dislike.like,
+                postId: dislike.commentId,
+              }
+            }),
+            createdAt: comment.createdAt,
+            updatedAt: comment.updatedAt,
+            creator: {
+              id: creator.userId,
+              name: creator.userName,
+            },
+          }
+        }),
+      }
+    })
+
+    return formattedPosts
+  }
+
   async getPost(id: string) {
-    const postsTable = 'posts'
     const usersTable = 'users'
     const commentsTable = 'comments'
-    const commentsPostsTable = 'comments_posts'
     const postId = id
 
     const results = await Db.connection('posts')

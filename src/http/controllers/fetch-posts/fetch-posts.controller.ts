@@ -7,7 +7,7 @@ import { FetchPostsOutput } from '../../../@types/types'
 export class FetchPostsController {
   constructor(private fetchPostsUseCase: FetchPostsUseCase) {}
   @SuccessResponse('200', 'Success')
-  @Get('page/:page')
+  @Get()
   async execute(): Promise<HttpResponse<FetchPostsOutput[]>> {
     const { posts } = await this.fetchPostsUseCase.execute()
 

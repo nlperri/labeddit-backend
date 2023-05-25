@@ -16,6 +16,7 @@ const {
   fetchComments,
   getPost,
   getUser,
+  fetchPostsWithComments,
 } = makeRoutes()
 const authenticationMiddleware = makeAuthenticationMiddleware()
 
@@ -139,6 +140,14 @@ export async function appRoutes() {
     (req, res, next) => authenticationMiddleware.auth(req, res, next),
     async (req, res) => {
       const { payload, statusCode } = await getUser.execute(req.params.id)
+      res.status(statusCode).json(payload)
+    },
+  )
+  router.get(
+    '/postscomments',
+    (req, res, next) => authenticationMiddleware.auth(req, res, next),
+    async (_, res) => {
+      const { payload, statusCode } = await fetchPostsWithComments.execute()
       res.status(statusCode).json(payload)
     },
   )
