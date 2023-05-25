@@ -45,48 +45,41 @@ describe('Fetch Posts Use Case', () => {
       creator_id: user.id,
     })
 
-
     await commentsRepository.create({
       content: 'some comment',
       creator_id: user.id,
       post_id: postMock.id,
     })
 
+    const { post } = await sut.execute({ postId: postMock.id })
 
-
-    const { post } = await sut.execute({postId: postMock.id})
-
-   console.log(post)
     expect(post).toEqual(
-        expect.objectContaining({
+      expect.objectContaining({
+        id: expect.any(String),
+        content: expect.any(String),
+        likes: expect.any(Number),
+        dislikes: expect.any(Number),
+        createdAt: expect.any(String),
+        updatedAt: expect.any(String),
+        creator: {
           id: expect.any(String),
-          content: expect.any(String),
-          likes: expect.any(Number),
-          dislikes: expect.any(Number),
-          createdAt: expect.any(String),
-          updatedAt: expect.any(String),
-          creator: {
+          name: expect.any(String),
+        },
+        comments: expect.arrayContaining([
+          expect.objectContaining({
+            content: expect.any(String),
             id: expect.any(String),
-            name: expect.any(String),
-          },
-          comments: expect.arrayContaining([
-            expect.objectContaining({
-                content: expect.any(String),
+            creator: expect.objectContaining({
               id: expect.any(String),
-              creator: 
-                expect.objectContaining({
-                    id: expect.any(String),
-                    name: expect.any(String)
-                })
-              ,
-              likes: expect.any(Number),
-              dislikes: expect.any(Number),
-              createdAt: expect.any(String),
-              updatedAt: expect.any(String),
+              name: expect.any(String),
             }),
-          ]),
-        }),
-      
+            likes: expect.any(Number),
+            dislikes: expect.any(Number),
+            createdAt: expect.any(String),
+            updatedAt: expect.any(String),
+          }),
+        ]),
+      }),
     )
   })
 })

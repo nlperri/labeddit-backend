@@ -10,7 +10,7 @@ export class FetchPostsWihCommentsUseCase {
 
   async execute(): Promise<FetchPostsUseCaseResponse> {
     const posts = await this.postsRepository.fetchPostsWithComments()
-    console.log('aqui')
+   
     return {
       posts,
     }

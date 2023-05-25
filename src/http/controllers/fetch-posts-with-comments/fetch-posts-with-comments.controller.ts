@@ -11,7 +11,6 @@ export class FetchPostsWithCommentsController {
   @SuccessResponse('200', 'Success')
   @Get()
   async execute(): Promise<HttpResponse<FetchPostsWithCommentsOutput[]>> {
-    console.log('aqui')
     const { posts } = await this.fetchPostsWithCommentsUseCase.execute()
 
     return new HttpResponse<FetchPostsWithCommentsOutput[]>(posts, 200)
