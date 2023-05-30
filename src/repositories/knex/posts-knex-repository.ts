@@ -60,6 +60,7 @@ export class KnexPostsRepository extends Db implements PostsRepository {
         ),
       )
       .innerJoin('users', 'users.id', '=', 'posts.creator_id')
+      .orderBy('createdAt', 'desc')
 
     const comments = await Db.connection('comments')
       .select(
